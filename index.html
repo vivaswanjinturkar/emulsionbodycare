@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emulsion Bodycare — Thoughtfully Formulated</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Jost:wght@400;500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sage: #B2C1A8;
+    --sage-deep: #56634B;
+    --sage-deeper: #3B4633;
+    --cream: #EAE3D1;
+    --cream-soft: #F4F0E6;
+    --ink: #3A3428;
+    --ink-soft: #6B6252;
+    --line: rgba(58,52,40,0.14);
+    --radius: 2px;
+    --wrap: 1180px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--cream-soft);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    margin:0;
+    color:var(--sage-deeper);
+    letter-spacing:-0.01em;
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+  .eyebrow{
+    font-family:'Jost', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.22em;
+    font-size:0.72rem;
+    color:var(--sage-deep);
+    font-weight:500;
+  }
+  .wrap{max-width:var(--wrap); margin:0 auto; padding:0 32px;}
+  section{padding:110px 0;}
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    font-family:'Jost', sans-serif;
+    font-weight:500;
+    letter-spacing:0.04em;
+    font-size:0.86rem;
+    text-transform:uppercase;
+    background:var(--sage-deeper);
+    color:var(--cream-soft);
+    padding:15px 30px;
+    border-radius:var(--radius);
+    border:1px solid var(--sage-deeper);
+    transition:background .3s ease, color .3s ease;
+    cursor:pointer;
+  }
+  .btn:hover{background:transparent; color:var(--sage-deeper);}
+  .btn.outline{
+    background:transparent;
+    color:var(--sage-deeper);
+    border:1px solid var(--sage-deeper);
+  }
+  .btn.outline:hover{background:var(--sage-deeper); color:var(--cream-soft);}
+  :focus-visible{outline:2px solid var(--sage-deep); outline-offset:3px;}
+
+  /* ---------- NAV ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(234,227,209,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    transition:padding .3s ease;
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 32px;
+    max-width:var(--wrap); margin:0 auto;
+    transition:padding .3s ease;
+  }
+  header.shrink .nav{padding:14px 32px;}
+  .logo{
+    font-family:'Jost', sans-serif;
+    font-weight:500;
+    font-size:1.35rem;
+    letter-spacing:0.01em;
+    color:var(--sage-deeper);
+    display:flex; align-items:center; gap:2px;
+  }
+  .logo .dot{color:var(--sage-deep); font-size:0.5em; vertical-align:8px;}
+  nav.links{display:flex; gap:38px; font-family:'Jost',sans-serif; font-size:0.88rem; font-weight:500; letter-spacing:0.03em;}
+  nav.links a{position:relative; color:var(--ink);}
+  nav.links a::after{
+    content:""; position:absolute; left:0; bottom:-6px; width:0; height:1px;
+    background:var(--sage-deeper); transition:width .25s ease;
+  }
+  nav.links a:hover::after{width:100%;}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    background:var(--sage);
+    min-height:92vh;
+    display:flex; align-items:center;
+    overflow:hidden;
+  }
+  .hero-inner{
+    max-width:var(--wrap); margin:0 auto; padding:0 32px;
+    display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px;
+    align-items:center; position:relative; z-index:2; width:100%;
+  }
+  .hero h1{
+    font-size:clamp(2.6rem, 5.4vw, 4.6rem);
+    color:var(--sage-deeper);
+    line-height:1.02;
+    margin-top:18px;
+  }
+  .hero p.sub{
+    margin-top:24px; max-width:440px;
+    color:var(--sage-deeper); opacity:0.86;
+    font-size:1.05rem;
+  }
+  .hero .cta-row{margin-top:38px; display:flex; gap:18px; flex-wrap:wrap;}
+
+  .blend-stage{
+    position:relative; width:100%; aspect-ratio:1/1; max-width:420px; justify-self:center;
+  }
+  .blend-stage svg{width:100%; height:100%;}
+  .drop{ transform-origin:center; }
+  .drop-cream{ animation: driftA 9s ease-in-out infinite; }
+  .drop-sage{ animation: driftB 9s ease-in-out infinite; }
+  @keyframes driftA{
+    0%,100%{ transform:translate(-38px,-14px) scale(1); }
+    50%{ transform:translate(6px,4px) scale(1.06); }
+  }
+  @keyframes driftB{
+    0%,100%{ transform:translate(40px,18px) scale(1); }
+    50%{ transform:translate(-4px,-6px) scale(0.96); }
+  }
+  .blend-label{
+    position:absolute; bottom:6px; left:50%; transform:translateX(-50%);
+    font-family:'Jost',sans-serif; font-size:0.68rem; letter-spacing:0.18em;
+    text-transform:uppercase; color:var(--sage-deeper); opacity:0.65;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .drop-cream, .drop-sage{ animation:none; }
+  }
+
+  /* ---------- PHILOSOPHY STRIP ---------- */
+  .philosophy{
+    background:var(--cream-soft);
+    padding:70px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .philosophy .wrap{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:40px;
+  }
+  .philosophy .item{border-left:1px solid var(--line); padding-left:24px;}
+  .philosophy .item h3{font-size:1.05rem; font-weight:500; margin-bottom:8px; color:var(--sage-deeper);}
+  .philosophy .item p{color:var(--ink-soft); font-size:0.94rem; margin:0;}
+
+  /* ---------- SECTION HEADERS ---------- */
+  .section-head{max-width:640px; margin-bottom:56px;}
+  .section-head h2{font-size:clamp(1.9rem,3.2vw,2.6rem); margin-top:10px;}
+  .section-head p{color:var(--ink-soft); margin-top:14px; font-size:1rem;}
+
+  /* ---------- PRODUCTS ---------- */
+  .category{border-top:1px solid var(--line);}
+  .category:nth-of-type(odd){background:var(--cream-soft);}
+  .category:nth-of-type(even){background:#fff;}
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:30px;}
+  .card{
+    border:1px solid var(--line);
+    background:#fff;
+    display:flex; flex-direction:column;
+    transition:transform .35s ease, box-shadow .35s ease;
+  }
+  .card:hover{transform:translateY(-6px); box-shadow:0 18px 40px rgba(59,70,51,0.12);}
+  .swatch{height:160px; position:relative; overflow:hidden;}
+  .swatch::after{
+    content:""; position:absolute; inset:0;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), transparent 60%);
+  }
+  .product-visual{
+    height:200px; position:relative; overflow:hidden;
+    background:var(--cream-soft);
+    display:flex; align-items:center; justify-content:center;
+    border-bottom:1px solid var(--line);
+  }
+  .product-visual::after{
+    content:""; position:absolute; inset:0;
+    background:radial-gradient(circle at 32% 26%, rgba(255,255,255,0.55), transparent 62%);
+    pointer-events:none;
+  }
+  .product-visual svg{ width:104px; height:auto; position:relative; z-index:1; }
+  .product-visual .cap, .product-visual .lid, .product-visual .pump{ fill:currentColor; }
+  .product-visual .body-shape{ fill:currentColor; opacity:0.78; }
+  .product-visual .edge{ stroke:rgba(0,0,0,0.1); stroke-width:1; fill:none; }
+  .product-visual .fleck{ fill:#fff; opacity:0.3; }
+  .product-visual .band{ fill:#fff; opacity:0.16; }
+  .card-body{padding:26px 24px 28px; display:flex; flex-direction:column; gap:10px; flex:1;}
+  .card-body .eyebrow{font-size:0.65rem;}
+  .card-body h3{font-size:1.2rem; font-weight:500;}
+  .card-body p{color:var(--ink-soft); font-size:0.92rem; margin:0; flex:1;}
+  .card-foot{
+    margin-top:8px; display:flex; align-items:center; justify-content:space-between;
+    font-family:'Jost',sans-serif; font-size:0.78rem; letter-spacing:0.05em; text-transform:uppercase;
+    color:var(--sage-deep); font-weight:500;
+  }
+
+  /* ---------- ABOUT ---------- */
+  .about{background:var(--sage-deeper); color:var(--cream-soft);}
+  .about h2, .about h3{color:var(--cream-soft);}
+  .about-grid{
+    display:grid; grid-template-columns:0.85fr 1.15fr; gap:70px; align-items:start;
+  }
+  .founder-card{
+    background:var(--cream-soft); color:var(--ink);
+    border:1px solid rgba(234,227,209,0.4);
+    padding:36px 30px;
+    position:sticky; top:110px;
+  }
+  .monogram{
+    width:86px; height:86px; border-radius:50%;
+    background:var(--sage);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-size:1.7rem; color:var(--sage-deeper);
+    margin-bottom:22px;
+  }
+  .founder-card h3{font-size:1.15rem; color:var(--sage-deeper); margin-bottom:4px;}
+  .founder-card .role{font-family:'Jost',sans-serif; font-size:0.78rem; color:var(--ink-soft); letter-spacing:0.03em;}
+  .founder-card hr{border:none; border-top:1px solid var(--line); margin:22px 0;}
+  .founder-card .label{font-family:'Jost',sans-serif; font-size:0.66rem; text-transform:uppercase; letter-spacing:0.16em; color:var(--sage-deep); margin-bottom:6px;}
+  .founder-card .fact{font-size:0.88rem; margin-bottom:16px; color:var(--ink);}
+
+  .about-copy .eyebrow{color:var(--sage);}
+  .about-copy h2{font-size:clamp(1.9rem,3vw,2.5rem); margin-top:12px;}
+  .about-copy blockquote{
+    font-family:'Fraunces', serif; font-style:italic; font-weight:400;
+    font-size:1.5rem; color:var(--sage); line-height:1.4;
+    margin:34px 0; padding-left:26px; border-left:2px solid var(--sage);
+  }
+  .about-copy p{color:rgba(234,227,209,0.86); font-size:1rem; margin:0 0 20px;}
+  .about-copy .sign{
+    margin-top:32px; font-family:'Fraunces', serif; font-style:italic; font-size:1.15rem; color:var(--cream);
+  }
+  .about-copy .sign small{
+    display:block; font-family:'Jost',sans-serif; font-style:normal; font-size:0.75rem;
+    letter-spacing:0.03em; color:rgba(234,227,209,0.6); margin-top:6px;
+  }
+
+  /* ---------- CONTACT / FOOTER ---------- */
+  .contact{background:var(--cream-soft); text-align:center;}
+  .contact .wrap{max-width:620px;}
+  .contact h2{font-size:clamp(1.8rem,3vw,2.3rem);}
+  .contact p{color:var(--ink-soft); margin-top:16px;}
+  .newsletter{
+    margin-top:36px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+  }
+  .newsletter input{
+    font-family:'Inter',sans-serif; font-size:0.92rem;
+    padding:15px 18px; border:1px solid var(--line); background:#fff;
+    min-width:260px; border-radius:var(--radius); color:var(--ink);
+  }
+  .newsletter input:focus{outline:2px solid var(--sage-deep); outline-offset:2px;}
+
+  footer{background:var(--sage-deeper); color:rgba(234,227,209,0.75); padding:60px 0 30px;}
+  .footer-grid{display:flex; justify-content:space-between; flex-wrap:wrap; gap:30px; padding-bottom:36px; border-bottom:1px solid rgba(234,227,209,0.15);}
+  .footer-logo{font-family:'Jost',sans-serif; font-size:1.2rem; color:var(--cream);}
+  .footer-links{display:flex; gap:50px; flex-wrap:wrap;}
+  .footer-col h4{font-family:'Jost',sans-serif; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.14em; color:var(--sage); margin-bottom:14px; font-weight:500;}
+  .footer-col a, .footer-col p{display:block; font-size:0.88rem; margin-bottom:8px; color:rgba(234,227,209,0.75);}
+  .footer-bottom{
+    display:flex; justify-content:space-between; padding-top:24px; font-size:0.8rem; flex-wrap:wrap; gap:10px;
+    font-family:'Jost',sans-serif; letter-spacing:0.02em;
+  }
+
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1; transform:none; transition:none;}
+  }
+
+  @media (max-width:900px){
+    .hero-inner{grid-template-columns:1fr; text-align:center;}
+    .hero p.sub{margin-left:auto; margin-right:auto;}
+    .cta-row{justify-content:center;}
+    .philosophy .wrap{grid-template-columns:1fr; gap:28px;}
+    .grid3{grid-template-columns:1fr;}
+    .about-grid{grid-template-columns:1fr; gap:40px;}
+    .founder-card{position:static;}
+    nav.links{display:none;}
+    .footer-grid{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <div class="nav">
+    <div class="logo">emulsion<span class="dot">●</span></div>
+    <nav class="links">
+      <a href="#shop">Shop</a>
+      <a href="#lip-balm">Lip Balm</a>
+      <a href="#lotions">Body Lotion</a>
+      <a href="#scrubs">Body Scrub</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <p class="eyebrow">Emulsion Bodycare</p>
+      <h1>Thoughtfully<br>Formulated.</h1>
+      <p class="sub">Skincare built on the same principle as its name — two different worlds, science and ritual, held together in careful balance.</p>
+      <div class="cta-row">
+        <a href="#shop" class="btn">Explore the Collection</a>
+        <a href="#about" class="btn outline">Meet the Founder</a>
+      </div>
+    </div>
+    <div class="blend-stage" aria-hidden="true">
+      <svg viewBox="0 0 300 300">
+        <defs>
+          <filter id="goo">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+            <feColorMatrix in="blur" mode="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9" result="goo"/>
+            <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+          </filter>
+        </defs>
+        <g filter="url(#goo)">
+          <circle class="drop drop-cream" cx="150" cy="150" r="70" fill="#EAE3D1"/>
+          <circle class="drop drop-sage" cx="150" cy="150" r="58" fill="#56634B"/>
+        </g>
+      </svg>
+      <span class="blend-label">oil · water · balance</span>
+    </div>
+  </div>
+</section>
+
+<section class="philosophy">
+  <div class="wrap">
+    <div class="item">
+      <h3>Quality over quantity</h3>
+      <p>A short list of ingredients, each one chosen for a reason, never for the label.</p>
+    </div>
+    <div class="item">
+      <h3>Simplicity over complexity</h3>
+      <p>Formulas designed to do one thing well, so your routine can stay quiet and unhurried.</p>
+    </div>
+    <div class="item">
+      <h3>Integrity, above all</h3>
+      <p>Every jar reflects the same standard a physician would hold for a patient's skin.</p>
+    </div>
+  </div>
+</section>
+
+<section class="category" id="shop">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">01 — For the lips</p>
+      <h2 id="lip-balm">Lip Balms</h2>
+      <p>Three tints, three moods — each one built on a base of shea and beeswax, so colour never comes at the cost of comfort.</p>
+    </div>
+    <div class="grid3">
+      <article class="card reveal">
+        <div class="product-visual" style="color:#EAE3D1;">
+          <svg viewBox="0 0 120 120"><rect class="lid edge" x="20" y="12" width="80" height="22" rx="8"/><rect class="body-shape edge" x="14" y="34" width="92" height="72" rx="18"/><rect class="band" x="14" y="60" width="92" height="14"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="eyebrow">Lip Balm</span>
+          <h3>Vanilla Bean</h3>
+          <p>Shea and cocoa butter melt into the lips with warm vanilla, leaving a soft, matte comfort that lasts.</p>
+          <div class="card-foot"><span>Nourishing</span><span>15g</span></div>
+        </div>
+      </article>
+      <article class="card reveal">
+        <div class="product-visual" style="color:#8C4A56;">
+          <svg viewBox="0 0 120 120"><rect class="lid edge" x="20" y="12" width="80" height="22" rx="8"/><rect class="body-shape edge" x="14" y="34" width="92" height="72" rx="18"/><rect class="band" x="14" y="60" width="92" height="14"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="eyebrow">Lip Balm</span>
+          <h3>Berry Lush</h3>
+          <p>A wash of wild berry and jojoba oil, tinting lips with quiet colour and lasting softness.</p>
+          <div class="card-foot"><span>Tinted</span><span>15g</span></div>
+        </div>
+      </article>
+      <article class="card reveal">
+        <div class="product-visual" style="color:#6E3341;">
+          <svg viewBox="0 0 120 120"><rect class="lid edge" x="20" y="12" width="80" height="22" rx="8"/><rect class="body-shape edge" x="14" y="34" width="92" height="72" rx="18"/><rect class="band" x="14" y="60" width="92" height="14"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="eyebrow">Lip Balm</span>
+          <h3>Wine Kiss</h3>
+          <p>A deep wine tint over a cushion of beeswax and vitamin E — lips that look kissed, not painted.</p>
+          <div class="card-foot"><span>Tinted</span><span>15g</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="category" id="lotions-wrap">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">02 — For the body</p>
+      <h2 id="lotions">Body Lotions</h2>
+      <p>Fast-absorbing formulas that treat the skin barrier as seriously as they treat the senses.</p>
+    </div>
+    <div class="grid3">
+      <article class="card reveal">
+        <div class="product-visual" style="color:#E4D9BE;">
+          <svg viewBox="0 0 130 130"><rect class="lid edge" x="25" y="10" width="80" height="24" rx="9"/><rect class="body-shape edge" x="17" y="34" width="96" height="88" rx="20"/><rect class="band" x="17" y="70" width="96" height="20"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="eyebrow">Body Lotion</span>
+          <h3>Vanilla Oat Milk</h3>
+          <p>Colloidal oat and warm vanilla calm the skin barrier, absorbing fast without a trace of greasiness.</p>
+          <div class="card-foot"><span>Calming</span><span>100g</span></div>
+        </div>
+      </article>
+      <article class="card reveal">
+        <div class="product-visual" style="color:#D9A28E;">
+          <svg viewBox="0 0 130 130"><rect class="lid edge" x="25" y="10" width="80" height="24" rx="9"/><rect class="body-shape edge" x="17" y="34" width="96" height="88" rx="20"/><rect class="band" x="17" y="70" width="96" height="20"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="eyebrow">Body Lotion</span>
+          <h3>Rose Saffron Glow</h3>
+          <p>Rose extract and saffron infuse skin with a luminous, even glow — a ritual borrowed from ancient brides.</p>
+          <div class="card-foot"><span>Illuminating</span><span>100g</span></div>
+        </div>
+      </article>
+      <article class="card reveal">
+        <div class="product-visual" style="color:#C7CE8A;">
+          <svg viewBox="0 0 130 130"><rect class="lid edge" x="25" y="10" width="80" height="24" rx="9"/><rect class="body-shape edge" x="17" y="34" width="96" height="88" rx="20"/><rect class="band" x="17" y="70" width="96" height="20"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="eyebrow">Body Lotion</span>
+          <h3>Citrus</h3>
+          <p>Bright citrus and light botanical oils wake up tired skin, leaving it soft and subtly fragranced.</p>
+          <div class="card-foot"><span>Energising</span><span>100g</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="category" id="scrubs-wrap">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <p class="eyebrow">03 — For renewal</p>
+      <h2 id="scrubs">Body Scrubs</h2>
+      <p>Emulsified, not gritty — each scrub suspends its exfoliant in a nourishing base so skin is buffed, never stripped.</p>
+    </div>
+    <div class="grid3">
+      <article class="card reveal">
+        <div class="product-visual" style="color:#D8AFA8;">
+          <svg viewBox="0 0 140 140"><rect class="lid edge" x="28" y="10" width="84" height="26" rx="9"/><rect class="body-shape edge" x="18" y="34" width="104" height="92" rx="22"/><circle class="fleck" cx="45" cy="70" r="4"/><circle class="fleck" cx="70" cy="90" r="3"/><circle class="fleck" cx="95" cy="65" r="3.5"/><circle class="fleck" cx="60" cy="55" r="2.5"/><circle class="fleck" cx="85" cy="100" r="2.5"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="eyebrow">Emulsified Scrub</span>
+          <h3>Pink Rose Clay</h3>
+          <p>Fine rose clay suspended in a nourishing emulsion buffs away dullness without stripping the skin.</p>
+          <div class="card-foot"><span>Gentle</span><span>100g</span></div>
+        </div>
+      </article>
+      <article class="card reveal">
+        <div class="product-visual" style="color:#8FB0A8;">
+          <svg viewBox="0 0 140 140"><rect class="lid edge" x="28" y="10" width="84" height="26" rx="9"/><rect class="body-shape edge" x="18" y="34" width="104" height="92" rx="22"/><circle class="fleck" cx="45" cy="70" r="4"/><circle class="fleck" cx="70" cy="90" r="3"/><circle class="fleck" cx="95" cy="65" r="3.5"/><circle class="fleck" cx="60" cy="55" r="2.5"/><circle class="fleck" cx="85" cy="100" r="2.5"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="eyebrow">Emulsified Scrub</span>
+          <h3>Ocean Mint</h3>
+          <p>Sea minerals and cooling mint refresh tired legs and shoulders, rinsing clean with no oily residue.</p>
+          <div class="card-foot"><span>Refreshing</span><span>100g</span></div>
+        </div>
+      </article>
+      <article class="card reveal">
+        <div class="product-visual" style="color:#EDE6D6;">
+          <svg viewBox="0 0 140 140"><rect class="lid edge" x="28" y="10" width="84" height="26" rx="9"/><rect class="body-shape edge" x="18" y="34" width="104" height="92" rx="22"/><circle class="fleck" cx="45" cy="70" r="4"/><circle class="fleck" cx="70" cy="90" r="3"/><circle class="fleck" cx="95" cy="65" r="3.5"/><circle class="fleck" cx="60" cy="55" r="2.5"/><circle class="fleck" cx="85" cy="100" r="2.5"/></svg>
+        </div>
+        <div class="card-body">
+          <span class="eyebrow">Emulsified Scrub</span>
+          <h3>Coconut Milk</h3>
+          <p>Coconut milk softens as it exfoliates — an indulgent step that finishes like a second moisturiser.</p>
+          <div class="card-foot"><span>Nourishing</span><span>100g</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="wrap about-grid">
+    <div class="founder-card reveal">
+      <div class="monogram">SS</div>
+      <h3>Dr. Sameera Shiurkar</h3>
+      <p class="role">Founder, Emulsion Bodycare</p>
+      <hr>
+      <div class="label">Credentials</div>
+      <p class="fact">Medical Doctor &amp; Aesthetic Physician</p>
+      <div class="label">Philosophy</div>
+      <p class="fact" style="margin-bottom:0;">Quality over quantity. Simplicity over complexity. Integrity above all.</p>
+    </div>
+
+    <div class="about-copy reveal">
+      <p class="eyebrow">Meet the Founder</p>
+      <h2>Beautiful skin begins<br>with understanding it.</h2>
+      <p>I've always believed that healthy skin is more than what we see on the surface. It reflects balance, care, and an understanding of the remarkable science behind it. I'm Dr. Sameera Shiurkar, a Medical Doctor and Aesthetic Physician, and the founder of Emulsion Bodycare.</p>
+      <p>My journey into skincare began through medicine. Years of studying the human body and working in aesthetic medicine gave me a deep appreciation for the skin — its complexity, its resilience, and the profound impact that thoughtful care can have on both skin health and self-confidence.</p>
+      <p>As I worked with patients, I found myself searching for skincare that combined scientific understanding with elegant simplicity — products that felt luxurious yet approachable, where every ingredient served a purpose and every formulation reflected intention rather than excess. That vision became Emulsion.</p>
+      <blockquote>"Every ingredient is carefully curated for its purpose, every formula crafted with precision and compassion — inspired by the harmony between nature and science."</blockquote>
+      <p>Building Emulsion has been one of the most meaningful journeys of my life. It is a reflection of everything I value as a doctor and as a founder: curiosity, craftsmanship, authenticity, and genuine care for the people who choose our products. Every jar and bottle represents our commitment to skincare that is beautiful in both experience and purpose.</p>
+      <p>Thank you for placing your trust in Emulsion. It is our privilege to be part of your skincare journey, and we hope every product reminds you that caring for your skin is one of the simplest, most meaningful forms of self-care.</p>
+      <div class="sign">
+        With gratitude, Dr. Sameera Shiurkar
+        <small>Founder, Emulsion Bodycare — Medical Doctor &amp; Aesthetic Physician</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap reveal">
+    <p class="eyebrow">Stay In Touch</p>
+    <h2>Join the ritual.</h2>
+    <p>New formulations, restocks, and quiet notes from Dr. Sameera — straight to your inbox, nothing else.</p>
+    <form class="newsletter" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Thank you';">
+      <input type="email" placeholder="Your email address" required aria-label="Email address">
+      <button type="submit" class="btn">Subscribe</button>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">emulsion</div>
+        <p style="margin-top:10px; max-width:260px; font-size:0.86rem;">Thoughtfully formulated skincare, made in small batches.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Shop</h4>
+          <a href="#lip-balm">Lip Balms</a>
+          <a href="#lotions">Body Lotions</a>
+          <a href="#scrubs">Body Scrubs</a>
+        </div>
+        <div class="footer-col">
+          <h4>Studio</h4>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Reach Us</h4>
+          <p>hello@emulsionbodycare.com</p>
+          <a href="#">@emulsionbodycare</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Emulsion Bodycare. All rights reserved.</span>
+      <span>Thoughtfully Formulated.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('shrink', window.scrollY > 40);
+  });
+
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+</script>
+
+</body>
+</html>
