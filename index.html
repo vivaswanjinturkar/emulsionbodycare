@@ -173,7 +173,7 @@
   /* ---------- HERO ---------- */
   .hero{
     position:relative;
-    background: linear-gradient(rgba(251, 249, 243, 0.88), rgba(251, 249, 243, 0.88)), url('hero-banner.jpg') no-repeat center center;
+    background: linear-gradient(rgba(195, 210, 182, 0.85), rgba(195, 210, 182, 0.85)), url('hero-banner.jpg') no-repeat center center;
     background-size: cover;
     min-height:92vh;
     display:flex; align-items:center;
@@ -186,16 +186,24 @@
   }
   .hero h1{
     font-size:clamp(2.6rem, 5.4vw, 4.6rem);
-    color:var(--sage-deeper);
+    color:var(--ink);
     line-height:1.02;
     margin-top:18px;
   }
   .hero p.sub{
     margin-top:24px; max-width:440px;
-    color:var(--sage-deeper); opacity:0.95;
+    color:var(--ink); opacity:0.9;
     font-size:1.05rem;
   }
   .hero .cta-row{margin-top:38px; display:flex; gap:18px; flex-wrap:wrap;}
+  .hero .btn.outline{
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .hero .btn.outline:hover{
+    background: var(--ink);
+    color: var(--cream-soft);
+  }
 
   .blend-stage{
     position:relative; width:100%; aspect-ratio:1/1; max-width:420px; justify-self:center;
