@@ -10,6 +10,9 @@
 <meta name="author" content="Dr. Sameera Shiurkar, Emulsion Bodycare">
 <link rel="canonical" href="https://www.emulsionbodycare.com/">
 
+<!-- EmailJS SDK -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Emulsion Bodycare">
@@ -1807,6 +1810,41 @@
       <p style="margin: 0 0 4px 0;"><strong style="color: var(--ink);">Phone:</strong> <span id="summaryPhone"></span></p>
       <p style="margin: 0;"><strong style="color: var(--ink);">Order Total:</strong> <span id="summaryTotal" style="font-family: 'Fraunces', serif; color: var(--sage-deeper); font-weight: 600;"></span></p>
     </div>
+    
+    <!-- Email Status Section -->
+    <div class="email-status-box" style="margin-top: 20px; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 24px; text-align: left; font-family: 'Jost', sans-serif;">
+      <h5 style="margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sage-deeper); font-size: 0.8rem;">Email Status</h5>
+      
+      <!-- Customer Email Status -->
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 0.88rem;">
+        <span id="emailStatusCustomerIcon" style="color: var(--sage-deep); display: flex; align-items: center;">
+          <svg class="email-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1.5s linear infinite;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2v4"></path></svg>
+        </span>
+        <span id="emailStatusCustomerText" style="color: var(--ink-soft);">Preparing customer receipt...</span>
+      </div>
+
+      <!-- Store Email Status -->
+      <div style="display: flex; align-items: center; gap: 10px; font-size: 0.88rem;">
+        <span id="emailStatusStoreIcon" style="color: var(--sage-deep); display: flex; align-items: center;">
+          <svg class="email-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1.5s linear infinite;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2v4"></path></svg>
+        </span>
+        <span id="emailStatusStoreText" style="color: var(--ink-soft);">Preparing store notification...</span>
+      </div>
+      
+      <!-- API Config Warning (Only shown in Simulation Mode) -->
+      <p id="emailConfigWarning" style="margin: 12px 0 0 0; font-size: 0.72rem; color: #a94442; display: none; line-height: 1.4; border-top: 1px dashed var(--line); padding-top: 10px;">
+        <strong>Developer Notice:</strong> Emails are running in simulation mode. Enter your EmailJS credentials in the JavaScript section of `index.html` to send live emails.
+      </p>
+    </div>
+
+    <!-- Spin Animation Keyframes Style -->
+    <style>
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+
     <button class="btn" style="width: 100%; justify-content: center;" onclick="closeCheckoutModal()">Back to Shop</button>
   </div>
 </div>
@@ -1841,6 +1879,22 @@
 </div>
 
 <script>
+  // --- EMAILJS CONFIGURATION ---
+  // To enable actual automated emails, sign up at https://www.emailjs.com/
+  // Create an Email Service and two Email Templates (one for you, one for the customer).
+  // Replace these placeholder strings with your actual EmailJS credentials:
+  const EMAILJS_CONFIG = {
+    PUBLIC_KEY: '', // Enter your EmailJS Public Key here (e.g. 'user_xxxxxxxxxxxx')
+    SERVICE_ID: '', // Enter your EmailJS Service ID here (e.g. 'service_xxxxxx')
+    TEMPLATE_ID_CUSTOMER: '', // Enter template ID for customer receipt (e.g. 'template_xxxxxx')
+    TEMPLATE_ID_STORE: '' // Enter template ID for store owner notification (e.g. 'template_yyyyyy')
+  };
+
+  // Initialize EmailJS if public key is provided
+  if (EMAILJS_CONFIG.PUBLIC_KEY) {
+    emailjs.init({ publicKey: EMAILJS_CONFIG.PUBLIC_KEY });
+  }
+
   // Sticky and Shrink Header
   const header = document.getElementById('siteHeader');
   window.addEventListener('scroll', () => {
@@ -2044,13 +2098,38 @@
     const state = document.getElementById('custState').value;
     const pin = document.getElementById('custPin').value;
     
+    const formattedAddress = `${address}, ${city}, ${state} - ${pin}`;
+    const orderTotal = document.getElementById('checkoutOrderTotal').textContent;
+    
+    // Format order details list for the email
+    const orderDetailsList = cart.map(item => `${item.name} (x${item.quantity}) - ₹${item.price * item.quantity}`).join('\n');
+    
     // Populate success screen details
     document.getElementById('summaryName').textContent = name;
-    document.getElementById('summaryAddress').textContent = `${address}, ${city}, ${state} - ${pin}`;
+    document.getElementById('summaryAddress').textContent = formattedAddress;
     document.getElementById('summaryPhone').textContent = phone;
-    document.getElementById('summaryTotal').textContent = document.getElementById('checkoutOrderTotal').textContent;
+    document.getElementById('summaryTotal').textContent = orderTotal;
     
-    // Clear and reset cart state
+    // Reset Email Status indicators
+    const customerIcon = document.getElementById('emailStatusCustomerIcon');
+    const storeIcon = document.getElementById('emailStatusStoreIcon');
+    const customerText = document.getElementById('emailStatusCustomerText');
+    const storeText = document.getElementById('emailStatusStoreText');
+    const configWarning = document.getElementById('emailConfigWarning');
+    
+    // Reset spinner SVGs
+    const spinnerSvg = `<svg class="email-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1.5s linear infinite;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2v4"></path></svg>`;
+    const successSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--sage-deep);"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    const errorSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a94442" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+
+    customerIcon.innerHTML = spinnerSvg;
+    storeIcon.innerHTML = spinnerSvg;
+    customerText.textContent = `Preparing customer receipt...`;
+    storeText.textContent = `Preparing store notification...`;
+    configWarning.style.display = 'none';
+
+    // Clear and reset cart state first (storing the items local variable for templates)
+    const cartItemsCopy = [...cart];
     cart = [];
     saveCart();
     renderCart();
@@ -2058,6 +2137,80 @@
     // Transition modal views
     document.getElementById('checkoutFormContent').style.display = 'none';
     document.getElementById('checkoutSuccessContent').style.display = 'block';
+    
+    // Check if EmailJS credentials are provided
+    if (EMAILJS_CONFIG.PUBLIC_KEY && EMAILJS_CONFIG.SERVICE_ID) {
+      // LIVE MODE
+      
+      // Template parameters
+      const templateParams = {
+        to_name: name,
+        to_email: email,
+        store_email: 'hello@emulsionbodycare.com',
+        phone: phone,
+        address: formattedAddress,
+        order_total: orderTotal,
+        order_details: orderDetailsList
+      };
+
+      // 1. Send receipt to Customer
+      if (EMAILJS_CONFIG.TEMPLATE_ID_CUSTOMER) {
+        customerText.textContent = `Sending receipt to ${email}...`;
+        emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID_CUSTOMER, templateParams)
+          .then(() => {
+            customerIcon.innerHTML = successSvg;
+            customerText.textContent = `Receipt sent to ${email}`;
+          })
+          .catch((err) => {
+            customerIcon.innerHTML = errorSvg;
+            customerText.textContent = `Receipt failed: ${err.text || err}`;
+          });
+      } else {
+        customerIcon.innerHTML = errorSvg;
+        customerText.textContent = `Customer Template ID missing`;
+      }
+
+      // 2. Send alert to Store
+      if (EMAILJS_CONFIG.TEMPLATE_ID_STORE) {
+        storeText.textContent = `Sending alert to store owner...`;
+        emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID_STORE, templateParams)
+          .then(() => {
+            storeIcon.innerHTML = successSvg;
+            storeText.textContent = `Alert sent to store owner`;
+          })
+          .catch((err) => {
+            storeIcon.innerHTML = errorSvg;
+            storeText.textContent = `Alert failed: ${err.text || err}`;
+          });
+      } else {
+        storeIcon.innerHTML = errorSvg;
+        storeText.textContent = `Store Template ID missing`;
+      }
+
+    } else {
+      // SIMULATION MODE
+      configWarning.style.display = 'block';
+      
+      // Log template inputs in console for testing
+      console.log('Order Email Simulation:', {
+        customer_email: email,
+        store_email: 'hello@emulsionbodycare.com',
+        order_total: orderTotal,
+        address: formattedAddress,
+        items: orderDetailsList
+      });
+
+      // Simulate sending delay
+      setTimeout(() => {
+        customerIcon.innerHTML = successSvg;
+        customerText.textContent = `Simulated: Receipt sent to ${email}`;
+      }, 1000);
+
+      setTimeout(() => {
+        storeIcon.innerHTML = successSvg;
+        storeText.textContent = `Simulated: Alert sent to hello@emulsionbodycare.com`;
+      }, 1600);
+    }
   }
 
   function closeCheckoutModal() {
