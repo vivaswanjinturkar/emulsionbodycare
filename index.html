@@ -176,7 +176,7 @@
   /* ---------- HERO ---------- */
   .hero{
     position:relative;
-    background: linear-gradient(rgba(195, 210, 182, 0.85), rgba(195, 210, 182, 0.85)), url('hero-banner.jpg') no-repeat center center;
+    background: linear-gradient(90deg, rgba(251, 249, 243, 0.5) 0%, rgba(251, 249, 243, 0) 50%), url('hero-banner.jpg') no-repeat center center;
     background-size: cover;
     min-height:92vh;
     display:flex; align-items:center;
@@ -209,6 +209,7 @@
   }
 
   .blend-stage{
+    display:none;
     position:relative; width:100%; aspect-ratio:1/1; max-width:420px; justify-self:center;
   }
   .blend-stage svg{width:100%; height:100%;}
@@ -235,7 +236,7 @@
   }
   .hero .float-deco.d1{ top:12%; left:6%; width:38px; animation-delay:0s; }
   .hero .float-deco.d2{ bottom:16%; left:12%; width:26px; animation-delay:1.4s; }
-  .hero .float-deco.d3{ top:18%; right:8%; width:30px; animation-delay:0.7s; }
+  .hero .float-deco.d3{ display: none; }
   @keyframes bob{
     0%,100%{ transform:translateY(0) rotate(0deg); }
     50%{ transform:translateY(-14px) rotate(6deg); }
@@ -883,6 +884,9 @@
   }
 
   @media (max-width:900px){
+    .hero{
+      background: linear-gradient(rgba(251, 249, 243, 0.75), rgba(251, 249, 243, 0.75)), url('hero-banner.jpg') no-repeat center center;
+    }
     .hero-inner{grid-template-columns:1fr; text-align:center;}
     .hero p.sub{margin-left:auto; margin-right:auto;}
     .cta-row{justify-content:center;}
