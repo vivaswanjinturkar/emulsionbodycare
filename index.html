@@ -248,7 +248,7 @@
     border-bottom:1px solid var(--line);
   }
   .philosophy .wrap{
-    display:grid; grid-template-columns:repeat(3,1fr); gap:40px;
+    display:grid; grid-template-columns:repeat(4,1fr); gap:40px;
   }
   .philosophy .item{border-left:1px solid var(--line); padding-left:24px;}
   .philosophy .item svg{color:var(--sage-deep); margin-bottom:14px;}
@@ -890,9 +890,61 @@
     nav.links{display:none;}
     .footer-grid{flex-direction:column;}
   }
+
+  /* ---------- ANNOUNCEMENT BAR ---------- */
+  .announcement-bar {
+    background: var(--sage-deeper);
+    color: var(--cream-soft);
+    text-align: center;
+    padding: 8px 32px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.76rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    z-index: 100;
+    position: relative;
+  }
+
+  /* ---------- HERO USP BADGE ---------- */
+  .hero-usp-row {
+    margin-top: 36px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .hero-usp-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Jost', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--sage-deeper);
+    letter-spacing: 0.05em;
+    background: rgba(195, 210, 182, 0.25);
+    padding: 8px 16px;
+    border-radius: 30px;
+    border: 1px solid rgba(95, 112, 80, 0.15);
+  }
+  .hero-usp-item svg {
+    color: var(--sage-deep);
+    flex-shrink: 0;
+  }
+
+  /* Tablet responsiveness for philosophy section */
+  @media (max-width: 1024px) and (min-width: 768px) {
+    .philosophy .wrap {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
 </style>
 </head>
 <body>
+
+<div class="announcement-bar">
+  Handcrafted with Naturally Derived Ingredients
+</div>
 
 <header id="siteHeader">
   <div class="nav">
@@ -923,6 +975,14 @@
       <div class="cta-row">
         <a href="#shop" class="btn">Explore the Collection</a>
         <a href="#about" class="btn outline">Meet the Founder</a>
+      </div>
+      <div class="hero-usp-row">
+        <div class="hero-usp-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <span>Handcrafted with Naturally Derived Ingredients</span>
+        </div>
       </div>
     </div>
     <div class="blend-stage" aria-hidden="true">
@@ -1144,6 +1204,13 @@
       <h3>Integrity, above all</h3>
       <p>Every jar reflects the same standard a physician would hold for a patient's skin.</p>
     </div>
+    <div class="item">
+      <svg width="30" height="30" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M24 40V12m0 16c6-4 12-2 12-2m-12 6c-6-4-12-2-12-2m12-16c6-4 12-2 12-2M24 18c-6-4-12-2-12-2"/>
+      </svg>
+      <h3>Naturally Derived</h3>
+      <p>Handcrafted with naturally derived ingredients, keeping your daily skincare clean and purposeful.</p>
+    </div>
   </div>
 </section>
 
@@ -1326,6 +1393,7 @@
       </article>
     </div>
   </div>
+</section>
 
 <div class="divider-dot" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 48 48" fill="currentColor"><path d="M24 4c9 12 14 20 14 27a14 14 0 1 1-28 0c0-7 5-15 14-27z"/></svg></div>
 <section class="about" id="about">
