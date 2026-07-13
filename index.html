@@ -1097,6 +1097,34 @@
     outline: none;
     border-color: var(--sage-deep);
   }
+
+  /* ---------- AUTOCOMPLETE SUGGESTIONS ---------- */
+  .autocomplete-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 10px 25px rgba(58, 52, 40, 0.15);
+    display: none;
+    margin-top: 4px;
+  }
+  .autocomplete-suggestion {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: var(--ink);
+    transition: background 0.2s;
+  }
+  .autocomplete-suggestion:hover {
+    background: rgba(195, 210, 182, 0.3);
+  }
 </style>
 </head>
 <body>
@@ -1688,13 +1716,47 @@
           </div>
         </div>
         <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 12px;">
-          <div class="form-group">
+          <div class="form-group" style="position: relative;">
             <label for="custCity">City</label>
-            <input type="text" id="custCity" required placeholder="Mumbai">
+            <input type="text" id="custCity" required placeholder="Mumbai" autocomplete="off" oninput="showCitySuggestions(this.value)" onfocus="showCitySuggestions(this.value)">
+            <div class="autocomplete-suggestions" id="citySuggestions"></div>
           </div>
           <div class="form-group">
             <label for="custState">State</label>
-            <input type="text" id="custState" required placeholder="Maharashtra">
+            <input type="text" id="custState" required placeholder="Maharashtra" list="statesList">
+            <datalist id="statesList">
+              <option value="Andhra Pradesh"></option>
+              <option value="Arunachal Pradesh"></option>
+              <option value="Assam"></option>
+              <option value="Bihar"></option>
+              <option value="Chhattisgarh"></option>
+              <option value="Goa"></option>
+              <option value="Gujarat"></option>
+              <option value="Haryana"></option>
+              <option value="Himachal Pradesh"></option>
+              <option value="Jharkhand"></option>
+              <option value="Karnataka"></option>
+              <option value="Kerala"></option>
+              <option value="Madhya Pradesh"></option>
+              <option value="Maharashtra"></option>
+              <option value="Manipur"></option>
+              <option value="Meghalaya"></option>
+              <option value="Mizoram"></option>
+              <option value="Nagaland"></option>
+              <option value="Odisha"></option>
+              <option value="Punjab"></option>
+              <option value="Rajasthan"></option>
+              <option value="Sikkim"></option>
+              <option value="Tamil Nadu"></option>
+              <option value="Telangana"></option>
+              <option value="Tripura"></option>
+              <option value="Uttar Pradesh"></option>
+              <option value="Uttarakhand"></option>
+              <option value="West Bengal"></option>
+              <option value="Delhi"></option>
+              <option value="Chandigarh"></option>
+              <option value="Jammu and Kashmir"></option>
+            </datalist>
           </div>
           <div class="form-group">
             <label for="custPin">PIN Code</label>
@@ -2131,6 +2193,134 @@
   function closeProductModal() {
     document.getElementById('productModal').classList.remove('open');
   }
+
+  // City and State Autocomplete Suggestions
+  const indianCities = [
+    { name: 'Mumbai', state: 'Maharashtra' },
+    { name: 'Delhi', state: 'Delhi' },
+    { name: 'Bengaluru', state: 'Karnataka' },
+    { name: 'Bangalore', state: 'Karnataka' },
+    { name: 'Hyderabad', state: 'Telangana' },
+    { name: 'Ahmedabad', state: 'Gujarat' },
+    { name: 'Chennai', state: 'Tamil Nadu' },
+    { name: 'Kolkata', state: 'West Bengal' },
+    { name: 'Surat', state: 'Gujarat' },
+    { name: 'Pune', state: 'Maharashtra' },
+    { name: 'Jaipur', state: 'Rajasthan' },
+    { name: 'Lucknow', state: 'Uttar Pradesh' },
+    { name: 'Kanpur', state: 'Uttar Pradesh' },
+    { name: 'Nagpur', state: 'Maharashtra' },
+    { name: 'Indore', state: 'Madhya Pradesh' },
+    { name: 'Thane', state: 'Maharashtra' },
+    { name: 'Bhopal', state: 'Madhya Pradesh' },
+    { name: 'Visakhapatnam', state: 'Andhra Pradesh' },
+    { name: 'Pimpri-Chinchwad', state: 'Maharashtra' },
+    { name: 'Patna', state: 'Bihar' },
+    { name: 'Vadodara', state: 'Gujarat' },
+    { name: 'Ghaziabad', state: 'Uttar Pradesh' },
+    { name: 'Ludhiana', state: 'Punjab' },
+    { name: 'Agra', state: 'Uttar Pradesh' },
+    { name: 'Nashik', state: 'Maharashtra' },
+    { name: 'Faridabad', state: 'Haryana' },
+    { name: 'Meerut', state: 'Uttar Pradesh' },
+    { name: 'Rajkot', state: 'Gujarat' },
+    { name: 'Kalyan-Dombivli', state: 'Maharashtra' },
+    { name: 'Vasai-Virar', state: 'Maharashtra' },
+    { name: 'Varanasi', state: 'Uttar Pradesh' },
+    { name: 'Srinagar', state: 'Jammu and Kashmir' },
+    { name: 'Aurangabad', state: 'Maharashtra' },
+    { name: 'Dhanbad', state: 'Jharkhand' },
+    { name: 'Amritsar', state: 'Punjab' },
+    { name: 'Navi Mumbai', state: 'Maharashtra' },
+    { name: 'Allahabad', state: 'Uttar Pradesh' },
+    { name: 'Ranchi', state: 'Jharkhand' },
+    { name: 'Howrah', state: 'West Bengal' },
+    { name: 'Coimbatore', state: 'Tamil Nadu' },
+    { name: 'Jabalpur', state: 'Madhya Pradesh' },
+    { name: 'Gwalior', state: 'Madhya Pradesh' },
+    { name: 'Vijayawada', state: 'Andhra Pradesh' },
+    { name: 'Jodhpur', state: 'Rajasthan' },
+    { name: 'Madurai', state: 'Tamil Nadu' },
+    { name: 'Raipur', state: 'Chhattisgarh' },
+    { name: 'Kota', state: 'Rajasthan' },
+    { name: 'Guwahati', state: 'Assam' },
+    { name: 'Chandigarh', state: 'Chandigarh' },
+    { name: 'Solapur', state: 'Maharashtra' },
+    { name: 'Hubli-Dharwad', state: 'Karnataka' },
+    { name: 'Bareilly', state: 'Uttar Pradesh' },
+    { name: 'Moradabad', state: 'Uttar Pradesh' },
+    { name: 'Mysore', state: 'Karnataka' },
+    { name: 'Gurugram', state: 'Haryana' },
+    { name: 'Gurgaon', state: 'Haryana' },
+    { name: 'Noida', state: 'Uttar Pradesh' },
+    { name: 'Kochi', state: 'Kerala' },
+    { name: 'Trivandrum', state: 'Kerala' },
+    { name: 'Panaji', state: 'Goa' },
+    { name: 'Dehradun', state: 'Uttarakhand' }
+  ];
+
+  function showCitySuggestions(query) {
+    const listEl = document.getElementById('citySuggestions');
+    if (!listEl) return;
+    listEl.innerHTML = '';
+    
+    if (!query) {
+      // If empty, show some popular cities as suggestions
+      const popular = [
+        { name: 'Mumbai', state: 'Maharashtra' },
+        { name: 'Delhi', state: 'Delhi' },
+        { name: 'Bengaluru', state: 'Karnataka' },
+        { name: 'Pune', state: 'Maharashtra' },
+        { name: 'Chennai', state: 'Tamil Nadu' }
+      ];
+      popular.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'autocomplete-suggestion';
+        item.textContent = `${c.name}, ${c.state}`;
+        item.onclick = function() {
+          document.getElementById('custCity').value = c.name;
+          document.getElementById('custState').value = c.state;
+          listEl.style.display = 'none';
+        };
+        listEl.appendChild(item);
+      });
+      listEl.style.display = 'block';
+      return;
+    }
+    
+    // Filter matching cities
+    const filtered = indianCities.filter(c => 
+      c.name.toLowerCase().startsWith(query.toLowerCase())
+    ).slice(0, 5); // Limit to top 5 matches
+    
+    if (filtered.length === 0) {
+      listEl.style.display = 'none';
+      return;
+    }
+    
+    filtered.forEach(c => {
+      const item = document.createElement('div');
+      item.className = 'autocomplete-suggestion';
+      item.textContent = `${c.name}, ${c.state}`;
+      item.onclick = function() {
+        document.getElementById('custCity').value = c.name;
+        document.getElementById('custState').value = c.state;
+        listEl.style.display = 'none';
+      };
+      listEl.appendChild(item);
+    });
+    
+    listEl.style.display = 'block';
+  }
+
+  // Close suggestions dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    const cityInput = document.getElementById('custCity');
+    const suggestionsList = document.getElementById('citySuggestions');
+    if (cityInput && suggestionsList && e.target !== cityInput && !suggestionsList.contains(e.target)) {
+      suggestionsList.style.display = 'none';
+    }
+  });
 
   // Initialize cart on page load
   window.addEventListener('DOMContentLoaded', initCart);
