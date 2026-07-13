@@ -932,11 +932,140 @@
     flex-shrink: 0;
   }
 
-  /* Tablet responsiveness for philosophy section */
-  @media (max-width: 1024px) and (min-width: 768px) {
-    .philosophy .wrap {
-      grid-template-columns: repeat(2, 1fr);
+  /* ---------- PRODUCT DETAIL MODAL ---------- */
+  .product-visual {
+    cursor: pointer;
+  }
+  .product-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(58, 52, 40, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 1500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .product-modal.open {
+    display: flex;
+  }
+  .product-modal-content {
+    background: var(--cream-soft);
+    border-radius: var(--radius);
+    max-width: 860px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(58, 52, 40, 0.25);
+    border: 1px solid var(--line);
+    animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    overflow: hidden;
+  }
+  .product-modal-content .close-modal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--ink-soft);
+    z-index: 10;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .product-modal-content .close-modal:hover {
+    color: var(--ink);
+  }
+  .product-modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  @media (max-width: 768px) {
+    .product-modal-grid {
+      grid-template-columns: 1fr;
     }
+  }
+  .product-modal-left {
+    background: #fff;
+    border-right: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+  }
+  .product-modal-left img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media (max-width: 768px) {
+    .product-modal-left {
+      min-height: 250px;
+      border-right: none;
+      border-bottom: 1px solid var(--line);
+    }
+  }
+  .product-modal-right {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    max-height: 80vh;
+  }
+  @media (max-width: 768px) {
+    .product-modal-right {
+      padding: 24px;
+      max-height: 50vh;
+    }
+  }
+  .product-modal-right h2 {
+    font-size: 2rem;
+    color: var(--sage-deeper);
+    margin: 0;
+  }
+  .price-size-row {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .modal-price {
+    font-family: 'Fraunces', serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--sage-deeper);
+  }
+  .modal-size {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .modal-description-section h4, .modal-ingredients-section h4 {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--sage-deep);
+    margin: 0 0 8px 0;
+  }
+  .modal-description-section p {
+    margin: 0;
+    font-size: 0.94rem;
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .modal-ingredients-section ul {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .modal-ingredients-section li {
+    margin-bottom: 4px;
   }
 </style>
 </head>
@@ -1238,13 +1367,13 @@
     <div class="shop-grid">
       <!-- Lip Balms -->
       <article class="card reveal" data-category="lip-balm" id="lip-balm-1">
-        <div class="product-visual">
+        <div class="product-visual" onclick="openProductModal('vanilla-bean-lip-balm')">
           <img src="vanilla-bean-lip-balm.jpg" alt="Vanilla Bean Lip Balm" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div class="card-body">
           <span class="eyebrow">Lip Balm</span>
           <h3>Vanilla Bean</h3>
-          <p>Shea and cocoa butter melt into the lips with warm vanilla, leaving a soft, matte comfort that lasts.</p>
+          <p>Crafted with nourishing butters and botanical oils to help soften, moisturize, and protect dry lips while leaving lips feeling smooth, comfortable, and delicately scented with vanilla.</p>
           <div class="price">₹249</div>
           <div class="card-foot"><span>Nourishing</span><span>15g</span></div>
           <button class="add-to-cart-btn" onclick="addToCart('vanilla-bean-lip-balm', 'Vanilla Bean Lip Balm', 249, 'vanilla-bean-lip-balm.jpg')">
@@ -1255,13 +1384,13 @@
       </article>
 
       <article class="card reveal" data-category="lip-balm" id="lip-balm-2">
-        <div class="product-visual">
+        <div class="product-visual" onclick="openProductModal('berry-lush-lip-balm')">
           <img src="berry-lush-lip-balm.jpg" alt="Berry Lush Lip Balm" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div class="card-body">
           <span class="eyebrow">Lip Balm</span>
           <h3>Berry Lush</h3>
-          <p>A wash of wild berry and jojoba oil, tinting lips with quiet colour and lasting softness.</p>
+          <p>A nourishing blend of shea butter, botanical oils, and berry extracts that helps keep lips soft, smooth, and deeply hydrated, finished with a delicious strawberry flavour for a delightful everyday lip care experience.</p>
           <div class="price">₹249</div>
           <div class="card-foot"><span>Tinted</span><span>15g</span></div>
           <button class="add-to-cart-btn" onclick="addToCart('berry-lush-lip-balm', 'Berry Lush Lip Balm', 249, 'berry-lush-lip-balm.jpg')">
@@ -1272,13 +1401,13 @@
       </article>
 
       <article class="card reveal" data-category="lip-balm" id="lip-balm-3">
-        <div class="product-visual">
+        <div class="product-visual" onclick="openProductModal('wine-kiss-lip-balm')">
           <img src="wine-kiss-lip-balm.jpg" alt="Wine Kiss Lip Balm" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div class="card-body">
           <span class="eyebrow">Lip Balm</span>
           <h3>Wine Kiss</h3>
-          <p>A deep wine tint over a cushion of beeswax and vitamin E — lips that look kissed, not painted.</p>
+          <p>Richly nourishing and naturally tinted, this lip balm combines creamy mango butter with botanical oils to help soften and protect lips, while beetroot powder lends a beautiful wine-inspired hue. Infused with vanilla extract and luscious berry notes, it leaves lips feeling smooth, comfortable, and subtly indulgent.</p>
           <div class="price">₹249</div>
           <div class="card-foot"><span>Tinted</span><span>15g</span></div>
           <button class="add-to-cart-btn" onclick="addToCart('wine-kiss-lip-balm', 'Wine Kiss Lip Balm', 249, 'wine-kiss-lip-balm.jpg')">
@@ -1290,7 +1419,7 @@
 
       <!-- Body Lotions -->
       <article class="card reveal" data-category="body-lotion" id="lotion-1">
-        <div class="product-visual">
+        <div class="product-visual" onclick="openProductModal('vanilla-oat-milk-body-lotion')">
           <img src="vanilla-oat-milk-body-lotion.jpg" alt="Vanilla Oat Milk Body Lotion" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div class="card-body">
@@ -1307,7 +1436,7 @@
       </article>
 
       <article class="card reveal" data-category="body-lotion" id="lotion-2">
-        <div class="product-visual">
+        <div class="product-visual" onclick="openProductModal('rose-saffron-glow-body-lotion')">
           <img src="rose-saffron-glow-body-lotion.jpg" alt="Rose Saffron Glow Body Lotion" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div class="card-body">
@@ -1324,7 +1453,7 @@
       </article>
 
       <article class="card reveal" data-category="body-lotion" id="lotion-3">
-        <div class="product-visual">
+        <div class="product-visual" onclick="openProductModal('citrus-body-lotion')">
           <img src="citrus-body-lotion.jpg" alt="Citrus Body Lotion" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div class="card-body">
@@ -1342,7 +1471,7 @@
 
       <!-- Body Scrubs -->
       <article class="card reveal" data-category="body-scrub" id="scrub-1">
-        <div class="product-visual">
+        <div class="product-visual" onclick="openProductModal('pink-rose-clay-scrub')">
           <img src="pink-rose-clay-scrub.jpg" alt="Pink Rose Clay Emulsified Scrub" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div class="card-body">
@@ -1359,7 +1488,7 @@
       </article>
 
       <article class="card reveal" data-category="body-scrub" id="scrub-2">
-        <div class="product-visual">
+        <div class="product-visual" onclick="openProductModal('ocean-mint-scrub')">
           <img src="ocean-mint-scrub.jpg" alt="Ocean Mint Emulsified Scrub" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div class="card-body">
@@ -1376,7 +1505,7 @@
       </article>
 
       <article class="card reveal" data-category="body-scrub" id="scrub-3">
-        <div class="product-visual">
+        <div class="product-visual" onclick="openProductModal('coconut-milk-scrub')">
           <img src="coconut-milk-scrub.jpg" alt="Coconut Milk Emulsified Scrub" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div class="card-body">
@@ -1497,6 +1626,35 @@
     <h3>Order Placed Successfully!</h3>
     <p>Thank you for shopping with Emulsion Bodycare. Your organic formulations will be prepared and shipped shortly.</p>
     <button class="btn" style="width: 100%; justify-content: center;" onclick="closeCheckoutModal()">Back to Shop</button>
+  </div>
+</div>
+
+<!-- Product Quick View Modal -->
+<div class="product-modal" id="productModal" onclick="if(event.target === this) closeProductModal()">
+  <div class="product-modal-content">
+    <button class="close-modal" onclick="closeProductModal()" aria-label="Close Product View">&times;</button>
+    <div class="product-modal-grid">
+      <div class="product-modal-left">
+        <img id="modalProductImg" src="" alt="">
+      </div>
+      <div class="product-modal-right">
+        <span class="eyebrow" id="modalProductCategory"></span>
+        <h2 id="modalProductTitle"></h2>
+        <div class="price-size-row">
+          <span class="modal-price" id="modalProductPrice"></span>
+          <span class="modal-size" id="modalProductSize"></span>
+        </div>
+        <div class="modal-description-section">
+          <h4>Description</h4>
+          <p id="modalProductDescription"></p>
+        </div>
+        <div class="modal-ingredients-section">
+          <h4>Ingredients</h4>
+          <ul id="modalProductIngredients"></ul>
+        </div>
+        <button class="add-to-cart-btn" id="modalAddToCartBtn" style="margin-top: 10px;">Add to Bag</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1695,6 +1853,131 @@
   document.getElementById('cartTrigger').addEventListener('click', () => toggleCart(true));
   document.getElementById('closeCart').addEventListener('click', () => toggleCart(false));
   document.getElementById('cartOverlay').addEventListener('click', () => toggleCart(false));
+
+  // Product Detail Modal Actions
+  const productData = {
+    'vanilla-bean-lip-balm': {
+      title: 'Vanilla Bean Lip Balm',
+      category: 'Lip Balm',
+      price: '₹249',
+      numericPrice: 249,
+      size: '15g',
+      img: 'vanilla-bean-lip-balm.jpg',
+      description: 'Crafted with nourishing butters and botanical oils to help soften, moisturize, and protect dry lips while leaving lips feeling smooth, comfortable, and delicately scented with vanilla.',
+      ingredients: ['Shea Butter', 'Sweet Almond Oil', 'Jojoba Oil', 'Castor Oil', 'Beeswax', 'Vanilla Extract', 'Vitamin E']
+    },
+    'berry-lush-lip-balm': {
+      title: 'Berry Lush Lip Balm',
+      category: 'Lip Balm',
+      price: '₹249',
+      numericPrice: 249,
+      size: '15g',
+      img: 'berry-lush-lip-balm.jpg',
+      description: 'A nourishing blend of shea butter, botanical oils, and berry extracts that helps keep lips soft, smooth, and deeply hydrated, finished with a delicious strawberry flavour for a delightful everyday lip care experience.',
+      ingredients: ['Shea Butter', 'Castor Oil', 'Jojoba Oil', 'Beeswax', 'Berry Extract', 'Strawberry Flavour Oil', 'Vitamin E']
+    },
+    'wine-kiss-lip-balm': {
+      title: 'Wine Kiss Lip Balm',
+      category: 'Lip Balm',
+      price: '₹249',
+      numericPrice: 249,
+      size: '15g',
+      img: 'wine-kiss-lip-balm.jpg',
+      description: 'Richly nourishing and naturally tinted, this lip balm combines creamy mango butter with botanical oils to help soften and protect lips, while beetroot powder lends a beautiful wine-inspired hue. Infused with vanilla extract and luscious berry notes, it leaves lips feeling smooth, comfortable, and subtly indulgent.',
+      ingredients: ['Mango Butter', 'Castor Oil', 'Jojoba Oil', 'Beeswax', 'Beetroot Powder (Natural Colourant)', 'Vanilla Extract', 'Berry Flavour Oil', 'Vanilla Bean Essential Oil', 'Vitamin E']
+    },
+    'vanilla-oat-milk-body-lotion': {
+      title: 'Vanilla Oat Milk Body Lotion',
+      category: 'Body Lotion',
+      price: '₹649',
+      numericPrice: 649,
+      size: '100g',
+      img: 'vanilla-oat-milk-body-lotion.jpg',
+      description: 'Colloidal oat and warm vanilla calm the skin barrier, absorbing fast without a trace of greasiness.',
+      ingredients: ['Colloidal Oatmeal', 'Sweet Almond Oil', 'Jojoba Oil', 'Vanilla Extract', 'Shea Butter', 'Glycerin', 'Water', 'Vitamin E']
+    },
+    'rose-saffron-glow-body-lotion': {
+      title: 'Rose Saffron Glow Body Lotion',
+      category: 'Body Lotion',
+      price: '₹649',
+      numericPrice: 649,
+      size: '100g',
+      img: 'rose-saffron-glow-body-lotion.jpg',
+      description: 'Rose extract and saffron infuse skin with a luminous, even glow — a ritual borrowed from ancient brides.',
+      ingredients: ['Rose Hydrosol', 'Saffron Extract', 'Almond Oil', 'Shea Butter', 'Rosehip Seed Oil', 'Glycerin', 'Vitamin E']
+    },
+    'citrus-body-lotion': {
+      title: 'Citrus Body Lotion',
+      category: 'Body Lotion',
+      price: '₹649',
+      numericPrice: 649,
+      size: '100g',
+      img: 'citrus-body-lotion.jpg',
+      description: 'Bright citrus oils and light botanicals refresh and hydrate the skin, leaving a subtle sun-kissed scent.',
+      ingredients: ['Orange Peel Essential Oil', 'Lemon Essential Oil', 'Jojoba Oil', 'Grape seed Oil', 'Shea Butter', 'Aloe Vera Extract', 'Vitamin E']
+    },
+    'pink-rose-clay-scrub': {
+      title: 'Pink Rose Clay Emulsified Scrub',
+      category: 'Body Scrub',
+      price: '₹649',
+      numericPrice: 649,
+      size: '200g',
+      img: 'pink-rose-clay-scrub.jpg',
+      description: 'Fine rose clay and gently exfoliating sugar polish the skin, leaving it incredibly soft and rosy.',
+      ingredients: ['White Sugar', 'Fine French Pink Clay', 'Rose Hip Seed Oil', 'Sweet Almond Oil', 'Shea Butter', 'Emulsifying Wax', 'Vitamin E']
+    },
+    'ocean-mint-scrub': {
+      title: 'Ocean Mint Emulsified Scrub',
+      category: 'Body Scrub',
+      price: '₹649',
+      numericPrice: 649,
+      size: '200g',
+      img: 'ocean-mint-scrub.jpg',
+      description: 'Peppermint oil and sea salt revitalize and scrub away dry skin, giving a cooling, spa-like refresh.',
+      ingredients: ['Fine Sugar', 'Sea Salt', 'Peppermint Essential Oil', 'Spearmint Essential Oil', 'Coconut Oil', 'Almond Oil', 'Vitamin E']
+    },
+    'coconut-milk-scrub': {
+      title: 'Coconut Milk Emulsified Scrub',
+      category: 'Body Scrub',
+      price: '₹649',
+      numericPrice: 649,
+      size: '200g',
+      img: 'coconut-milk-scrub.jpg',
+      description: 'Coconut milk softens as it exfoliates — an indulgent step that finishes like a second moisturiser.',
+      ingredients: ['Sugar', 'Dehydrated Coconut Milk Powder', 'Virgin Coconut Oil', 'Sweet Almond Oil', 'Shea Butter', 'Vitamin E']
+    }
+  };
+
+  function openProductModal(productId) {
+    const data = productData[productId];
+    if (!data) return;
+
+    document.getElementById('modalProductImg').src = data.img;
+    document.getElementById('modalProductImg').alt = data.title;
+    document.getElementById('modalProductCategory').textContent = data.category;
+    document.getElementById('modalProductTitle').textContent = data.title;
+    document.getElementById('modalProductPrice').textContent = data.price;
+    document.getElementById('modalProductSize').textContent = data.size;
+    document.getElementById('modalProductDescription').textContent = data.description;
+
+    const ingredientsList = document.getElementById('modalProductIngredients');
+    ingredientsList.innerHTML = '';
+    data.ingredients.forEach(ing => {
+      const li = document.createElement('li');
+      li.textContent = ing;
+      ingredientsList.appendChild(li);
+    });
+
+    const addBtn = document.getElementById('modalAddToCartBtn');
+    addBtn.setAttribute('onclick', `addToCart('${productId}', '${data.title}', ${data.numericPrice}, '${data.img}'); closeProductModal();`);
+
+    const modal = document.getElementById('productModal');
+    modal.classList.add('open');
+  }
+
+  function closeProductModal() {
+    document.getElementById('productModal').classList.remove('open');
+  }
 
   // Initialize cart on page load
   window.addEventListener('DOMContentLoaded', initCart);
