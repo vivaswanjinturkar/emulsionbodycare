@@ -1067,6 +1067,36 @@
   .modal-ingredients-section li {
     margin-bottom: 4px;
   }
+
+  /* ---------- CHECKOUT FORM ELEMENTS ---------- */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .form-group label {
+    font-family: 'Jost', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .form-group input {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+    transition: border-color 0.25s, outline 0.25s;
+  }
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--sage-deep);
+  }
 </style>
 </head>
 <body>
@@ -1621,10 +1651,100 @@
 
 <!-- Checkout Modal -->
 <div class="checkout-modal" id="checkoutModal">
-  <div class="modal-content">
-    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+  <!-- Step 1: Checkout Form -->
+  <div class="modal-content" id="checkoutFormContent" style="max-width: 600px; text-align: left; position: relative;">
+    <button class="close-modal" onclick="closeCheckoutModal()" style="position: absolute; top: 15px; right: 20px; background: transparent; border: none; font-size: 1.8rem; cursor: pointer; color: var(--ink-soft);">&times;</button>
+    <h3 style="margin-bottom: 24px; color: var(--sage-deeper); font-family: 'Fraunces', serif;">Checkout</h3>
+    
+    <form id="checkoutForm" onsubmit="handlePlaceOrder(event)">
+      <!-- Contact Info -->
+      <div class="form-section">
+        <h4 style="font-family: 'Jost', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sage-deep); margin-bottom: 12px; border-bottom: 1px solid var(--line); padding-bottom: 6px;">Contact Information</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="custName">Full Name</label>
+            <input type="text" id="custName" required placeholder="E.g., Dr. Sameera Shiurkar">
+          </div>
+        </div>
+        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label for="custEmail">Email Address</label>
+            <input type="email" id="custEmail" required placeholder="sameera@emulsionbodycare.com">
+          </div>
+          <div class="form-group">
+            <label for="custPhone">Phone Number</label>
+            <input type="tel" id="custPhone" required placeholder="10-digit number" pattern="[0-9]{10}">
+          </div>
+        </div>
+      </div>
+
+      <!-- Shipping Address -->
+      <div class="form-section" style="margin-top: 24px;">
+        <h4 style="font-family: 'Jost', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sage-deep); margin-bottom: 12px; border-bottom: 1px solid var(--line); padding-bottom: 6px;">Shipping Address</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="custAddress">Street Address</label>
+            <input type="text" id="custAddress" required placeholder="Flat No, Building Name, Street, Locality">
+          </div>
+        </div>
+        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 12px;">
+          <div class="form-group">
+            <label for="custCity">City</label>
+            <input type="text" id="custCity" required placeholder="Mumbai">
+          </div>
+          <div class="form-group">
+            <label for="custState">State</label>
+            <input type="text" id="custState" required placeholder="Maharashtra">
+          </div>
+          <div class="form-group">
+            <label for="custPin">PIN Code</label>
+            <input type="text" id="custPin" required placeholder="6-digit PIN" pattern="[0-9]{6}">
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Method -->
+      <div class="form-section" style="margin-top: 24px;">
+        <h4 style="font-family: 'Jost', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--sage-deep); margin-bottom: 12px; border-bottom: 1px solid var(--line); padding-bottom: 6px;">Payment Method</h4>
+        <div class="payment-options" style="display: flex; gap: 16px; margin-top: 8px;">
+          <label class="payment-label" style="display: flex; align-items: center; gap: 8px; font-family: 'Jost', sans-serif; font-size: 0.9rem; cursor: pointer;">
+            <input type="radio" name="paymentMethod" value="COD" checked>
+            Cash on Delivery (COD)
+          </label>
+          <label class="payment-label" style="display: flex; align-items: center; gap: 8px; font-family: 'Jost', sans-serif; font-size: 0.9rem; cursor: pointer; opacity: 0.6;">
+            <input type="radio" name="paymentMethod" value="Online" disabled>
+            Online (UPI/Cards) - Coming Soon
+          </label>
+        </div>
+      </div>
+
+      <!-- Action Row -->
+      <div class="checkout-actions" style="margin-top: 32px; display: flex; justify-content: space-between; align-items: center; gap: 16px;">
+        <div class="checkout-total" style="font-family: 'Jost', sans-serif;">
+          <span style="font-size: 0.85rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em;">Total to Pay</span>
+          <h3 id="checkoutOrderTotal" style="font-family: 'Fraunces', serif; font-size: 1.5rem; color: var(--sage-deeper); margin: 0;"></h3>
+        </div>
+        <button type="submit" class="btn" style="flex: 1; justify-content: center;">Complete Order</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Step 2: Success Confirmation -->
+  <div class="modal-content" id="checkoutSuccessContent" style="display: none;">
+    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
     <h3>Order Placed Successfully!</h3>
     <p>Thank you for shopping with Emulsion Bodycare. Your organic formulations will be prepared and shipped shortly.</p>
+    
+    <div class="order-summary-box" style="background: rgba(195, 210, 182, 0.2); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 24px; text-align: left; font-family: 'Jost', sans-serif; font-size: 0.9rem; color: var(--ink-soft);">
+      <h5 style="margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sage-deeper); font-size: 0.8rem;">Delivery Details</h5>
+      <p style="margin: 0 0 4px 0;"><strong style="color: var(--ink);">Deliver to:</strong> <span id="summaryName"></span></p>
+      <p style="margin: 0 0 4px 0;"><strong style="color: var(--ink);">Address:</strong> <span id="summaryAddress"></span></p>
+      <p style="margin: 0 0 4px 0;"><strong style="color: var(--ink);">Phone:</strong> <span id="summaryPhone"></span></p>
+      <p style="margin: 0;"><strong style="color: var(--ink);">Order Total:</strong> <span id="summaryTotal" style="font-family: 'Fraunces', serif; color: var(--sage-deeper); font-weight: 600;"></span></p>
+    </div>
     <button class="btn" style="width: 100%; justify-content: center;" onclick="closeCheckoutModal()">Back to Shop</button>
   </div>
 </div>
@@ -1835,14 +1955,47 @@
       alert('Your shopping bag is empty.');
       return;
     }
-    // Clear cart
-    cart = [];
-    saveCart();
-    renderCart();
+    
+    // Calculate total order amount
+    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    document.getElementById('checkoutOrderTotal').textContent = `₹${subtotal}`;
+    
+    // Reset form fields and view states
+    document.getElementById('checkoutForm').reset();
+    document.getElementById('checkoutFormContent').style.display = 'block';
+    document.getElementById('checkoutSuccessContent').style.display = 'none';
     
     // Close Drawer, Open checkout Modal
     toggleCart(false);
     document.getElementById('checkoutModal').classList.add('open');
+  }
+
+  function handlePlaceOrder(event) {
+    event.preventDefault();
+    
+    // Grab customer inputs
+    const name = document.getElementById('custName').value;
+    const email = document.getElementById('custEmail').value;
+    const phone = document.getElementById('custPhone').value;
+    const address = document.getElementById('custAddress').value;
+    const city = document.getElementById('custCity').value;
+    const state = document.getElementById('custState').value;
+    const pin = document.getElementById('custPin').value;
+    
+    // Populate success screen details
+    document.getElementById('summaryName').textContent = name;
+    document.getElementById('summaryAddress').textContent = `${address}, ${city}, ${state} - ${pin}`;
+    document.getElementById('summaryPhone').textContent = phone;
+    document.getElementById('summaryTotal').textContent = document.getElementById('checkoutOrderTotal').textContent;
+    
+    // Clear and reset cart state
+    cart = [];
+    saveCart();
+    renderCart();
+    
+    // Transition modal views
+    document.getElementById('checkoutFormContent').style.display = 'none';
+    document.getElementById('checkoutSuccessContent').style.display = 'block';
   }
 
   function closeCheckoutModal() {
