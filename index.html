@@ -1811,8 +1811,8 @@
       <p style="margin: 0;"><strong style="color: var(--ink);">Order Total:</strong> <span id="summaryTotal" style="font-family: 'Fraunces', serif; color: var(--sage-deeper); font-weight: 600;"></span></p>
     </div>
     
-    <!-- Email Status Section -->
-    <div class="email-status-box" style="margin-top: 20px; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 24px; text-align: left; font-family: 'Jost', sans-serif;">
+    <!-- Delivery Status Section -->
+    <div class="delivery-status-box" style="margin-top: 20px; border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin-bottom: 24px; text-align: left; font-family: 'Jost', sans-serif;">
       <h5 style="margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sage-deeper); font-size: 0.8rem;">Email Status</h5>
       
       <!-- Customer Email Status -->
@@ -1824,16 +1824,34 @@
       </div>
 
       <!-- Store Email Status -->
-      <div style="display: flex; align-items: center; gap: 10px; font-size: 0.88rem;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 0.88rem; border-bottom: 1px dashed var(--line); padding-bottom: 12px;">
         <span id="emailStatusStoreIcon" style="color: var(--sage-deep); display: flex; align-items: center;">
           <svg class="email-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1.5s linear infinite;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2v4"></path></svg>
         </span>
         <span id="emailStatusStoreText" style="color: var(--ink-soft);">Preparing store notification...</span>
       </div>
+
+      <h5 style="margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sage-deeper); font-size: 0.8rem;">SMS Status</h5>
+
+      <!-- Customer SMS Status -->
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 0.88rem;">
+        <span id="smsStatusCustomerIcon" style="color: var(--sage-deep); display: flex; align-items: center;">
+          <svg class="email-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1.5s linear infinite;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2v4"></path></svg>
+        </span>
+        <span id="smsStatusCustomerText" style="color: var(--ink-soft);">Preparing customer SMS...</span>
+      </div>
+
+      <!-- Store SMS Status -->
+      <div style="display: flex; align-items: center; gap: 10px; font-size: 0.88rem;">
+        <span id="smsStatusStoreIcon" style="color: var(--sage-deep); display: flex; align-items: center;">
+          <svg class="email-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1.5s linear infinite;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2v4"></path></svg>
+        </span>
+        <span id="smsStatusStoreText" style="color: var(--ink-soft);">Preparing store owner SMS...</span>
+      </div>
       
-      <!-- API Config Warning (Only shown in Simulation Mode) -->
+      <!-- API Config Warning -->
       <p id="emailConfigWarning" style="margin: 12px 0 0 0; font-size: 0.72rem; color: #a94442; display: none; line-height: 1.4; border-top: 1px dashed var(--line); padding-top: 10px;">
-        <strong>Developer Notice:</strong> Emails are running in simulation mode. Enter your EmailJS credentials in the JavaScript section of `index.html` to send live emails.
+        <strong>Developer Notice:</strong> Email/SMS alerts are running in simulation mode. Enter your API credentials in index.html to send live messages.
       </p>
     </div>
 
@@ -1893,6 +1911,101 @@
   // Initialize EmailJS if public key is provided
   if (EMAILJS_CONFIG.PUBLIC_KEY) {
     emailjs.init({ publicKey: EMAILJS_CONFIG.PUBLIC_KEY });
+  }
+
+  // --- SMS CONFIGURATION (Twilio or Fast2SMS) ---
+  // Replace these placeholder settings to activate live SMS notifications:
+  const SMS_CONFIG = {
+    PROVIDER: 'simulation', // Set to 'twilio', 'fast2sms', or 'simulation'
+    
+    // Twilio credentials (if using Twilio)
+    TWILIO_ACCOUNT_SID: '',
+    TWILIO_AUTH_TOKEN: '',
+    TWILIO_FROM_NUMBER: '',
+    
+    // Fast2SMS API Key (if using Fast2SMS)
+    FAST2SMS_API_KEY: '',
+    
+    // Store owner number for receiving order notifications
+    OWNER_PHONE: '9067057777'
+  };
+
+  function sendSMS(toPhone, messageText, statusIconId, statusTextId, label) {
+    const iconEl = document.getElementById(statusIconId);
+    const textEl = document.getElementById(statusTextId);
+    if (!iconEl || !textEl) return;
+    
+    const successSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--sage-deep);"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    const errorSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a94442" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+
+    if (SMS_CONFIG.PROVIDER === 'twilio' && SMS_CONFIG.TWILIO_ACCOUNT_SID && SMS_CONFIG.TWILIO_AUTH_TOKEN) {
+      textEl.textContent = `Sending SMS to ${toPhone} (Twilio)...`;
+      
+      const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${SMS_CONFIG.TWILIO_ACCOUNT_SID}/Messages.json`;
+      const formData = new URLSearchParams();
+      formData.append('To', toPhone.startsWith('+') ? toPhone : `+91${toPhone}`); // Default to India country code if missing
+      formData.append('From', SMS_CONFIG.TWILIO_FROM_NUMBER);
+      formData.append('Body', messageText);
+      
+      fetch(twilioUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Basic ' + btoa(`${SMS_CONFIG.TWILIO_ACCOUNT_SID}:${SMS_CONFIG.TWILIO_AUTH_TOKEN}`),
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formData.toString()
+      })
+      .then(res => {
+        if (res.ok) {
+          iconEl.innerHTML = successSvg;
+          textEl.textContent = `${label} sent to ${toPhone}`;
+        } else {
+          res.json().then(data => {
+            iconEl.innerHTML = errorSvg;
+            textEl.textContent = `SMS failed: ${data.message || 'Error'}`;
+          });
+        }
+      })
+      .catch(err => {
+        iconEl.innerHTML = errorSvg;
+        textEl.textContent = `SMS error: ${err.message || err}`;
+      });
+      
+    } else if (SMS_CONFIG.PROVIDER === 'fast2sms' && SMS_CONFIG.FAST2SMS_API_KEY) {
+      textEl.textContent = `Sending SMS to ${toPhone} (Fast2SMS)...`;
+      
+      const cleanPhone = toPhone.replace(/[^0-9]/g, '');
+      const tenDigitPhone = cleanPhone.length > 10 ? cleanPhone.slice(-10) : cleanPhone;
+      
+      const fast2smsUrl = `https://www.fast2sms.com/dev/bulkV2?authorization=${SMS_CONFIG.FAST2SMS_API_KEY}&route=q&message=${encodeURIComponent(messageText)}&flash=0&numbers=${tenDigitPhone}`;
+      
+      fetch(fast2smsUrl, {
+        method: 'GET'
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.return) {
+          iconEl.innerHTML = successSvg;
+          textEl.textContent = `${label} sent to ${toPhone}`;
+        } else {
+          iconEl.innerHTML = errorSvg;
+          textEl.textContent = `SMS failed: ${data.message || 'Error'}`;
+        }
+      })
+      .catch(err => {
+        iconEl.innerHTML = errorSvg;
+        textEl.textContent = `SMS error: ${err.message || err}`;
+      });
+      
+    } else {
+      // Simulation mode
+      console.log(`SMS Simulation [To: ${toPhone}]: ${messageText}`);
+      
+      setTimeout(() => {
+        iconEl.innerHTML = successSvg;
+        textEl.textContent = `Simulated: ${label} sent to ${toPhone}`;
+      }, statusIconId.includes('Customer') ? 1200 : 1800);
+    }
   }
 
   // Sticky and Shrink Header
@@ -2111,10 +2224,17 @@
     document.getElementById('summaryTotal').textContent = orderTotal;
     
     // Reset Email Status indicators
-    const customerIcon = document.getElementById('emailStatusCustomerIcon');
-    const storeIcon = document.getElementById('emailStatusStoreIcon');
-    const customerText = document.getElementById('emailStatusCustomerText');
-    const storeText = document.getElementById('emailStatusStoreText');
+    const customerEmailIcon = document.getElementById('emailStatusCustomerIcon');
+    const storeEmailIcon = document.getElementById('emailStatusStoreIcon');
+    const customerEmailText = document.getElementById('emailStatusCustomerText');
+    const storeEmailText = document.getElementById('emailStatusStoreText');
+    
+    // Reset SMS Status indicators
+    const customerSmsIcon = document.getElementById('smsStatusCustomerIcon');
+    const storeSmsIcon = document.getElementById('smsStatusStoreIcon');
+    const customerSmsText = document.getElementById('smsStatusCustomerText');
+    const storeSmsText = document.getElementById('smsStatusStoreText');
+    
     const configWarning = document.getElementById('emailConfigWarning');
     
     // Reset spinner SVGs
@@ -2122,10 +2242,16 @@
     const successSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--sage-deep);"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
     const errorSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a94442" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
 
-    customerIcon.innerHTML = spinnerSvg;
-    storeIcon.innerHTML = spinnerSvg;
-    customerText.textContent = `Preparing customer receipt...`;
-    storeText.textContent = `Preparing store notification...`;
+    customerEmailIcon.innerHTML = spinnerSvg;
+    storeEmailIcon.innerHTML = spinnerSvg;
+    customerEmailText.textContent = `Preparing customer receipt...`;
+    storeEmailText.textContent = `Preparing store notification...`;
+    
+    customerSmsIcon.innerHTML = spinnerSvg;
+    storeSmsIcon.innerHTML = spinnerSvg;
+    customerSmsText.textContent = `Preparing customer SMS...`;
+    storeSmsText.textContent = `Preparing store owner SMS...`;
+    
     configWarning.style.display = 'none';
 
     // Clear and reset cart state first (storing the items local variable for templates)
@@ -2138,79 +2264,91 @@
     document.getElementById('checkoutFormContent').style.display = 'none';
     document.getElementById('checkoutSuccessContent').style.display = 'block';
     
-    // Check if EmailJS credentials are provided
+    // 1. DISPATCH EMAILS (EmailJS)
     if (EMAILJS_CONFIG.PUBLIC_KEY && EMAILJS_CONFIG.SERVICE_ID) {
       // LIVE MODE
       
-      // Template parameters
       const templateParams = {
         to_name: name,
         to_email: email,
-        store_email: 'hello@emulsionbodycare.com',
+        store_email: 'hello@emulsionbodycare.com, drsameerashiurkar@gmail.com', // Sent to both owners
         phone: phone,
         address: formattedAddress,
         order_total: orderTotal,
         order_details: orderDetailsList
       };
 
-      // 1. Send receipt to Customer
+      // Customer receipt
       if (EMAILJS_CONFIG.TEMPLATE_ID_CUSTOMER) {
-        customerText.textContent = `Sending receipt to ${email}...`;
+        customerEmailText.textContent = `Sending receipt to ${email}...`;
         emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID_CUSTOMER, templateParams)
           .then(() => {
-            customerIcon.innerHTML = successSvg;
-            customerText.textContent = `Receipt sent to ${email}`;
+            customerEmailIcon.innerHTML = successSvg;
+            customerEmailText.textContent = `Receipt sent to ${email}`;
           })
           .catch((err) => {
-            customerIcon.innerHTML = errorSvg;
-            customerText.textContent = `Receipt failed: ${err.text || err}`;
+            customerEmailIcon.innerHTML = errorSvg;
+            customerEmailText.textContent = `Receipt failed: ${err.text || err}`;
           });
       } else {
-        customerIcon.innerHTML = errorSvg;
-        customerText.textContent = `Customer Template ID missing`;
+        customerEmailIcon.innerHTML = errorSvg;
+        customerEmailText.textContent = `Customer Template ID missing`;
       }
 
-      // 2. Send alert to Store
+      // Store alerts (both hello@emulsionbodycare.com and drsameerashiurkar@gmail.com)
       if (EMAILJS_CONFIG.TEMPLATE_ID_STORE) {
-        storeText.textContent = `Sending alert to store owner...`;
+        storeEmailText.textContent = `Sending alert to store owners...`;
         emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID_STORE, templateParams)
           .then(() => {
-            storeIcon.innerHTML = successSvg;
-            storeText.textContent = `Alert sent to store owner`;
+            storeEmailIcon.innerHTML = successSvg;
+            storeEmailText.textContent = `Alert sent to store owners`;
           })
           .catch((err) => {
-            storeIcon.innerHTML = errorSvg;
-            storeText.textContent = `Alert failed: ${err.text || err}`;
+            storeEmailIcon.innerHTML = errorSvg;
+            storeEmailText.textContent = `Alert failed: ${err.text || err}`;
           });
       } else {
-        storeIcon.innerHTML = errorSvg;
-        storeText.textContent = `Store Template ID missing`;
+        storeEmailIcon.innerHTML = errorSvg;
+        storeEmailText.textContent = `Store Template ID missing`;
       }
 
     } else {
       // SIMULATION MODE
       configWarning.style.display = 'block';
       
-      // Log template inputs in console for testing
       console.log('Order Email Simulation:', {
         customer_email: email,
-        store_email: 'hello@emulsionbodycare.com',
+        store_emails: 'hello@emulsionbodycare.com, drsameerashiurkar@gmail.com',
         order_total: orderTotal,
         address: formattedAddress,
         items: orderDetailsList
       });
 
-      // Simulate sending delay
       setTimeout(() => {
-        customerIcon.innerHTML = successSvg;
-        customerText.textContent = `Simulated: Receipt sent to ${email}`;
+        customerEmailIcon.innerHTML = successSvg;
+        customerEmailText.textContent = `Simulated: Receipt sent to ${email}`;
       }, 1000);
 
       setTimeout(() => {
-        storeIcon.innerHTML = successSvg;
-        storeText.textContent = `Simulated: Alert sent to hello@emulsionbodycare.com`;
-      }, 1600);
+        storeEmailIcon.innerHTML = successSvg;
+        storeEmailText.textContent = `Simulated: Alert sent to hello@emulsionbodycare.com & drsameerashiurkar@gmail.com`;
+      }, 1500);
     }
+    
+    // 2. DISPATCH SMS ALERTS
+    const customerSmsMsg = `Hi ${name}, your order with Emulsion Bodycare of total ${orderTotal} has been placed successfully! It will be prepared and shipped shortly.`;
+    const ownerSmsMsg = `New Order Alert! Customer: ${name} (${phone}), Address: ${formattedAddress}, Total: ${orderTotal}.`;
+    
+    // If running in simulation mode, show developer warning
+    if (SMS_CONFIG.PROVIDER === 'simulation' || (!SMS_CONFIG.TWILIO_ACCOUNT_SID && !SMS_CONFIG.FAST2SMS_API_KEY)) {
+      configWarning.style.display = 'block';
+    }
+    
+    // Customer SMS
+    sendSMS(phone, customerSmsMsg, 'smsStatusCustomerIcon', 'smsStatusCustomerText', 'Customer SMS');
+    
+    // Owner SMS
+    sendSMS(SMS_CONFIG.OWNER_PHONE, ownerSmsMsg, 'smsStatusStoreIcon', 'smsStatusStoreText', 'Owner alert SMS');
   }
 
   function closeCheckoutModal() {
