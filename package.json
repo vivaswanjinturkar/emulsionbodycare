@@ -1,0 +1,15 @@
+{
+  "name": "emulsion-bodycare-backend",
+  "version": "1.0.0",
+  "description": "Serverless APIs for Emulsion Body Care payments, database logging, and emails.",
+  "main": "api/create-order.js",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.8",
+    "dotenv": "^16.4.5",
+    "razorpay": "^2.9.2",
+    "resend": "^3.2.0"
+  }
+}

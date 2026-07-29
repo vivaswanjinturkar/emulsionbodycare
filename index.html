@@ -12,6 +12,9 @@
 
   <!-- EmailJS SDK -->
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  
+  <!-- Razorpay Checkout SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -2501,7 +2504,7 @@
             <span class="val" id="checkoutOrderTotal">₹0</span>
           </div>
           
-          <button type="submit" class="checkout-btn">Place Cash on Delivery Order</button>
+          <button type="submit" class="checkout-btn" id="checkout-submit-btn">Pay & Place Order</button>
         </form>
       </div>
 
@@ -2515,34 +2518,31 @@
         
         <div class="checkout-success-details">
           <h4>Order Summary</h4>
+          <p>Order Reference: <strong id="summaryOrderNumber">EBC-XXXXXX</strong></p>
           <p>Recipient: <strong id="summaryName">Recipient Name</strong></p>
           <p>Shipping to: <strong id="summaryAddress">Address details</strong></p>
           <p>Contact Phone: <strong id="summaryPhone">Phone number</strong></p>
           <p>Total amount: <strong id="summaryTotal">₹0</strong></p>
-          <p>Payment Mode: <strong>Cash on Delivery (COD)</strong></p>
+          <p>Payment Mode: <strong id="summaryPaymentMode">Prepaid (Razorpay)</strong></p>
         </div>
 
         <div class="status-logs-box">
           <div class="status-log-row">
+            <span class="status-icon" id="dbStatusIcon"></span>
+            <span class="status-text" id="dbStatusText">Preparing transaction database log...</span>
+          </div>
+          <div class="status-log-row">
             <span class="status-icon" id="emailStatusCustomerIcon"></span>
-            <span class="status-text" id="emailStatusCustomerText"></span>
+            <span class="status-text" id="emailStatusCustomerText">Preparing client email confirmation...</span>
           </div>
           <div class="status-log-row">
             <span class="status-icon" id="emailStatusStoreIcon"></span>
-            <span class="status-text" id="emailStatusStoreText"></span>
-          </div>
-          <div class="status-log-row">
-            <span class="status-icon" id="smsStatusCustomerIcon"></span>
-            <span class="status-text" id="smsStatusCustomerText"></span>
-          </div>
-          <div class="status-log-row">
-            <span class="status-icon" id="smsStatusStoreIcon"></span>
-            <span class="status-text" id="smsStatusStoreText"></span>
+            <span class="status-text" id="emailStatusStoreText">Preparing manager dispatch logs...</span>
           </div>
         </div>
 
         <p id="emailConfigWarning" style="margin: 12px 0 0 0; font-size: 0.72rem; color: #a94442; display: none; line-height: 1.4; border-top: 1px dashed var(--color-border); padding-top: 10px;">
-          Note: Credentials are unconfigured. SMS and Email outputs are logged to the console in Developer Simulation Mode.
+          Note: Local environment variables are unconfigured. SMS and email notifications are simulated in local console logs.
         </p>
         
         <button class="checkout-btn" style="margin-top: 24px;" onclick="closeCheckoutModal()">Continue Browsing</button>
@@ -2951,123 +2951,178 @@
       const pin = document.getElementById('custPin').value;
       
       const formattedAddress = `${address}, ${city}, ${state} - ${pin}`;
-      const orderTotal = document.getElementById('checkoutOrderTotal').textContent;
-      const orderDetailsList = cart.map(item => `${item.name} (x${item.quantity}) - ₹${item.price * item.quantity}`).join('\n');
+      const totalVal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const orderTotal = `₹${totalVal}`;
       
-      document.getElementById('summaryName').textContent = name;
-      document.getElementById('summaryAddress').textContent = formattedAddress;
-      document.getElementById('summaryPhone').textContent = phone;
-      document.getElementById('summaryTotal').textContent = orderTotal;
-      
-      const customerEmailIcon = document.getElementById('emailStatusCustomerIcon');
-      const storeEmailIcon = document.getElementById('emailStatusStoreIcon');
-      const customerEmailText = document.getElementById('emailStatusCustomerText');
-      const storeEmailText = document.getElementById('emailStatusStoreText');
-      
-      const customerSmsIcon = document.getElementById('smsStatusCustomerIcon');
-      const storeSmsIcon = document.getElementById('smsStatusStoreIcon');
-      const customerSmsText = document.getElementById('smsStatusCustomerText');
-      const storeSmsText = document.getElementById('smsStatusStoreText');
-      
-      const configWarning = document.getElementById('emailConfigWarning');
+      const submitBtn = document.getElementById('checkout-submit-btn');
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Processing Checkout...';
       
       const spinnerSvg = `<svg class="email-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1.5s linear infinite;"><circle cx="12" cy="12" r="10"></circle><path d="M12 2v4"></path></svg>`;
       const successSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-sage);"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
       const errorSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a94442" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
 
-      customerEmailIcon.innerHTML = spinnerSvg;
+      // Initialize Checkout Success DOM with details
+      document.getElementById('summaryName').textContent = name;
+      document.getElementById('summaryAddress').textContent = formattedAddress;
+      document.getElementById('summaryPhone').textContent = phone;
+      document.getElementById('summaryTotal').textContent = orderTotal;
+      document.getElementById('summaryPaymentMode').textContent = 'Prepaid (Razorpay)';
+      
+      const dbIcon = document.getElementById('dbStatusIcon');
+      const dbText = document.getElementById('dbStatusText');
+      const custEmailIcon = document.getElementById('emailStatusCustomerIcon');
+      const custEmailText = document.getElementById('emailStatusCustomerText');
+      const storeEmailIcon = document.getElementById('emailStatusStoreIcon');
+      const storeEmailText = document.getElementById('emailStatusStoreText');
+      const configWarning = document.getElementById('emailConfigWarning');
+      
+      dbIcon.innerHTML = spinnerSvg;
+      dbText.textContent = 'Contacting payment gateway...';
+      custEmailIcon.innerHTML = spinnerSvg;
+      custEmailText.textContent = 'Waiting for payment...';
       storeEmailIcon.innerHTML = spinnerSvg;
-      customerEmailText.textContent = `Preparing customer receipt...`;
-      storeEmailText.textContent = `Preparing store notification...`;
-      
-      customerSmsIcon.innerHTML = spinnerSvg;
-      storeSmsIcon.innerHTML = spinnerSvg;
-      customerSmsText.textContent = `Preparing customer SMS...`;
-      storeSmsText.textContent = `Preparing store owner SMS...`;
-      
+      storeEmailText.textContent = 'Waiting for payment...';
       configWarning.style.display = 'none';
 
-      cart = [];
-      saveCart();
-      renderCart();
-      
-      document.getElementById('checkoutFormContent').style.display = 'none';
-      document.getElementById('checkoutSuccessContent').style.display = 'block';
-      
-      // 1. Send Email (EmailJS)
-      if (EMAILJS_CONFIG.PUBLIC_KEY && EMAILJS_CONFIG.SERVICE_ID) {
-        const templateParams = {
-          to_name: name,
-          to_email: email,
-          store_email: 'hello@emulsionbodycare.com, drsameerashiurkar@gmail.com',
-          phone: phone,
-          address: formattedAddress,
-          order_total: orderTotal,
-          order_details: orderDetailsList
+      // 1. Contact Backend Serverless API to generate Razorpay Order ID
+      fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: totalVal })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('Could not initialize payment order. Unconfigured environment.');
+        return res.json();
+      })
+      .then(orderData => {
+        // 2. Open Razorpay Checkout overlay
+        const options = {
+          key: orderData.key_id,
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: 'Emulsion Body Care',
+          description: 'Secure Checkout Payment',
+          image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32"%3E%3Cpath d="M12 2C8.69 2 6 4.69 6 8c0 4.42 6 14 6 14s6-9.58 6-14c0-3.31-2.69-6-6-6z" fill="%238B9B82"/%3E%3C/svg%3E',
+          order_id: orderData.order_id,
+          handler: function (response) {
+            // Payment success! Proceed to verification
+            submitBtn.textContent = 'Verifying Transaction...';
+            dbText.textContent = 'Verifying payment signature...';
+            
+            // Switch views
+            document.getElementById('checkoutFormContent').style.display = 'none';
+            document.getElementById('checkoutSuccessContent').style.display = 'block';
+
+            const payload = {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              checkoutDetails: { name, email, phone, address, city, state, pin },
+              cart: cart,
+              totalAmount: totalVal
+            };
+
+            // Post to verify payment endpoint
+            fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            })
+            .then(verifyRes => {
+              if (!verifyRes.ok) throw new Error('Transaction verification failed on server.');
+              return verifyRes.json();
+            })
+            .then(verifyData => {
+              // Set order reference number
+              document.getElementById('summaryOrderNumber').textContent = verifyData.order_number;
+              
+              // Update status box
+              dbIcon.innerHTML = successSvg;
+              dbText.textContent = 'Order logged in database';
+              
+              custEmailIcon.innerHTML = successSvg;
+              custEmailText.textContent = `Receipt sent to ${email}`;
+              
+              storeEmailIcon.innerHTML = successSvg;
+              storeEmailText.textContent = `Alert sent to store manager`;
+              
+              // Clear local cart
+              cart = [];
+              saveCart();
+              renderCart();
+            })
+            .catch(verifyErr => {
+              dbIcon.innerHTML = errorSvg;
+              dbText.textContent = `Database logging failed: ${verifyErr.message}`;
+              custEmailIcon.innerHTML = errorSvg;
+              custEmailText.textContent = 'Resend receipt email failed';
+              storeEmailIcon.innerHTML = errorSvg;
+              storeEmailText.textContent = 'Owner alert dispatch failed';
+            });
+          },
+          prefill: {
+            name: name,
+            email: email,
+            contact: phone
+          },
+          theme: {
+            color: '#8B9B82'
+          },
+          modal: {
+            ondismiss: function () {
+              submitBtn.disabled = false;
+              submitBtn.textContent = originalText;
+            }
+          }
         };
 
-        if (EMAILJS_CONFIG.TEMPLATE_ID_CUSTOMER) {
-          customerEmailText.textContent = `Sending receipt to ${email}...`;
-          emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID_CUSTOMER, templateParams)
-            .then(() => {
-              customerEmailIcon.innerHTML = successSvg;
-              customerEmailText.textContent = `Receipt sent to ${email}`;
-            })
-            .catch((err) => {
-              customerEmailIcon.innerHTML = errorSvg;
-              customerEmailText.textContent = `Receipt failed: ${err.text || err}`;
-            });
-        } else {
-          customerEmailIcon.innerHTML = errorSvg;
-          customerEmailText.textContent = `Customer Template ID missing`;
-        }
-
-        if (EMAILJS_CONFIG.TEMPLATE_ID_STORE) {
-          storeEmailText.textContent = `Sending alert to store owners...`;
-          emailjs.send(EMAILJS_CONFIG.SERVICE_ID, EMAILJS_CONFIG.TEMPLATE_ID_STORE, templateParams)
-            .then(() => {
-              storeEmailIcon.innerHTML = successSvg;
-              storeEmailText.textContent = `Alert sent to store owners`;
-            })
-            .catch((err) => {
-              storeEmailIcon.innerHTML = errorSvg;
-              storeEmailText.textContent = `Alert failed: ${err.text || err}`;
-            });
-        } else {
-          storeEmailIcon.innerHTML = errorSvg;
-          storeEmailText.textContent = `Store Template ID missing`;
-        }
-      } else {
+        const rzp = new Razorpay(options);
+        rzp.open();
+      })
+      .catch(err => {
+        console.warn('Vercel serverless APIs unconfigured or unreachable. Falling back to frontend developer simulation.', err);
         configWarning.style.display = 'block';
-        console.log('Order Email Simulation:', {
-          customer_email: email,
-          store_emails: 'hello@emulsionbodycare.com, drsameerashiurkar@gmail.com',
-          order_total: orderTotal,
-          address: formattedAddress,
-          items: orderDetailsList
-        });
 
+        // Switch to success view immediately
+        document.getElementById('checkoutFormContent').style.display = 'none';
+        document.getElementById('checkoutSuccessContent').style.display = 'block';
+
+        // Generate simulated mock order ID
+        const simulatedOrderNum = 'EBC-SIM' + String(Date.now()).slice(-4);
+        document.getElementById('summaryOrderNumber').textContent = simulatedOrderNum;
+        document.getElementById('summaryPaymentMode').textContent = 'Prepaid (Simulated)';
+
+        // Run mock timeout updates
+        dbText.textContent = 'Creating mock database entry...';
         setTimeout(() => {
-          customerEmailIcon.innerHTML = successSvg;
-          customerEmailText.textContent = `Simulated: Receipt sent to ${email}`;
+          dbIcon.innerHTML = successSvg;
+          dbText.textContent = `Simulated: Logged order ${simulatedOrderNum} in DB`;
         }, 1000);
 
         setTimeout(() => {
+          custEmailIcon.innerHTML = successSvg;
+          custEmailText.textContent = `Simulated: Confirmation sent to ${email}`;
+        }, 1800);
+
+        setTimeout(() => {
           storeEmailIcon.innerHTML = successSvg;
-          storeEmailText.textContent = `Simulated: Alert sent to hello@emulsionbodycare.com & drsameerashiurkar@gmail.com`;
-        }, 1500);
-      }
-      
-      // 2. Send SMS
-      const customerSmsMsg = `Hi ${name}, your order with Emulsion Body Care of total ${orderTotal} has been placed successfully! It will be prepared and shipped shortly.`;
-      const ownerSmsMsg = `New Order Alert! Customer: ${name} (${phone}), Address: ${formattedAddress}, Total: ${orderTotal}.`;
-      
-      if (SMS_CONFIG.PROVIDER === 'simulation' || (!SMS_CONFIG.TWILIO_ACCOUNT_SID && !SMS_CONFIG.FAST2SMS_API_KEY)) {
-        configWarning.style.display = 'block';
-      }
-      
-      sendSMS(phone, customerSmsMsg, 'smsStatusCustomerIcon', 'smsStatusCustomerText', 'Customer SMS');
-      sendSMS(SMS_CONFIG.OWNER_PHONE, ownerSmsMsg, 'smsStatusStoreIcon', 'smsStatusStoreText', 'Owner alert SMS');
+          storeEmailText.textContent = `Simulated: Owner alert logged to console`;
+          
+          // Clear cart
+          cart = [];
+          saveCart();
+          renderCart();
+        }, 2600);
+
+        console.log('Simulated Order Log payload:', {
+          order_id: simulatedOrderNum,
+          customer: { name, email, phone, formattedAddress },
+          items: cart,
+          total: orderTotal
+        });
+      });
     }
 
     function closeCheckoutModal() {
