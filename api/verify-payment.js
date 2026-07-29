@@ -92,7 +92,7 @@ module.exports = async (req, res) => {
 
     // 4. Send Transactional Emails (Resend)
     const resendApiKey = process.env.RESEND_API_KEY;
-    const storeOwnerEmail = process.env.STORE_OWNER_EMAIL || 'hello@emulsionbodycare.com';
+    const storeOwnerEmail = process.env.STORE_OWNER_EMAIL || 'drsameerashiurkar@gmail.com';
     let emailSuccess = false;
     let emailErrorMsg = '';
 
@@ -229,11 +229,55 @@ module.exports = async (req, res) => {
       emailErrorMsg = 'Resend API key missing';
     }
 
+    // 5. Send Store Owner SMS Notification (Twilio API via native fetch)
+    const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
+    const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+    const twilioFromNumber = process.env.TWILIO_FROM_NUMBER;
+    const ownerPhone = process.env.STORE_OWNER_PHONE || '+919067057777'; // Send alerts to your phone 9067057777!
+    
+    let smsSuccess = false;
+    let smsErrorMsg = '';
+
+    if (twilioAccountSid && twilioAuthToken && twilioFromNumber) {
+      try {
+        const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`;
+        const auth = 'Basic ' + Buffer.from(`${twilioAccountSid}:${twilioAuthToken}`).toString('base64');
+        const params = new URLSearchParams();
+        params.append('To', ownerPhone);
+        params.append('From', twilioFromNumber);
+        params.append('Body', `New Order Confirmation! Reference: ${order_number}, Customer: ${checkoutDetails.name}, Total: ₹${totalAmount}, Status: PAID.`);
+
+        const twilioRes = await fetch(twilioUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': auth,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: params.toString()
+        });
+
+        if (twilioRes.ok) {
+          smsSuccess = true;
+        } else {
+          const errData = await twilioRes.json();
+          smsErrorMsg = errData.message || 'Twilio response error';
+          console.error('Twilio SMS sending failed:', errData);
+        }
+      } catch (smsErr) {
+        console.error('Twilio SMS API connection failed:', smsErr);
+        smsErrorMsg = smsErr.message;
+      }
+    } else {
+      console.warn('Twilio credentials missing. Skipping SMS owner alert.');
+      smsErrorMsg = 'Twilio credentials missing';
+    }
+
     return res.status(200).json({
       success: true,
       order_number: order_number,
       db_status: dbSuccess ? 'saved' : `failed: ${dbErrorMsg}`,
-      email_status: emailSuccess ? 'sent' : `failed: ${emailErrorMsg}`
+      email_status: emailSuccess ? 'sent' : `failed: ${emailErrorMsg}`,
+      sms_status: smsSuccess ? 'sent' : `failed: ${smsErrorMsg}`
     });
 
   } catch (error) {
